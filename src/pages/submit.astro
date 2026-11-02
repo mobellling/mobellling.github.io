@@ -1,7 +1,6 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 import Icon from 'node_modules/astro-icon/components/Icon.astro';
-import { getPermalink, getBlogPermalink, getAsset } from '../utils/permalinks';
 const metadata = {
   title: '用户投稿',
 };
@@ -202,6 +201,7 @@ class="space-y-6 bg-white dark:bg-slate-900 p-8 rounded-xl shadow-md border bord
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // @ts-expect-error provided by the staticforms script above
     StaticForms.attach(document.querySelector('form'));
   });
 </script>

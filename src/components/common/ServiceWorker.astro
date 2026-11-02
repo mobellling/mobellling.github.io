@@ -1,0 +1,14 @@
+---
+/**
+ * Registers `public/sw.js` and installs `window.__SW__`.
+ *
+ * The module is a no-op in the Astro dev server unless the page has
+ * `?sw_debug=1`, so HMR is never intercepted while developing.
+ */
+---
+
+<script>
+  import { initServiceWorker } from '~/scripts/sw-client';
+
+  void initServiceWorker();
+</script>
