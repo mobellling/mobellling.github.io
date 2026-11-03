@@ -149,9 +149,6 @@ export const footerData = {
       
       links: [
         { text: 'Astro相关文档', href: 'https://docs.astro.build/en/getting-started/' },
-        { text: '源文件', href: 'https://github.com/mobellling/blog' },
-        { text: '联系', href: getPermalink('/contact') },
-        { text: 'Blog', href: getBlogPermalink() },
         { text: '图片转webp', href: 'https://wefreestar.com/zh/toolbox/image-to-webp' },
         { text: 'webp裁切', href: 'https://imageresizer.com/zh/%E8%A3%81%E5%89%AA-webp' },
         { text: '文本加空行', href: 'https://uutool.cn/list-new-line' },
@@ -162,9 +159,7 @@ export const footerData = {
       title: '特别鸣谢',
       target: '_blank',
       links: [
-        { text: 'neonmz', href: 'https://neonmz.github.io/',
-          
-        },
+        { text: 'neonmz', href: 'https://neonmz.github.io/', },
        
         // { text: 'Report an issue', href: 'https://github.com/arthelokyo/astrowind/issues' },
         // { text: 'License', href: 'https://github.com/arthelokyo/astrowind/blob/main/LICENSE.md' },
