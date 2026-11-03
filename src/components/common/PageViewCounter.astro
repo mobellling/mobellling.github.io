@@ -27,7 +27,7 @@
   const COUNTER_SELECTOR = '[data-view-count]';
   const API_URL = 'https://events.vercount.one/api/v2/log';
   const REQUEST_TIMEOUT = 5000;
-  const DEDUPE_MS = 2000;
+  const DEDUPE_MS = 600*1000;
   const numberFormat = new Intl.NumberFormat('zh-CN');
 
   let scheduled = false;
