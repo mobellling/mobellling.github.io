@@ -71,6 +71,13 @@ const { post, url } = Astro.props;
               </>
             )
           }
+          <>
+            {' '}
+            · <Icon name="tabler:eye" class="w-4 h-4 inline-block -mt-0.5 dark:text-gray-400" />
+            <span class="inline-block" title="本文阅读量">
+              <span data-view-count="page" class="tabular-nums font-medium">—</span> 次阅读
+            </span>
+          </>
         </p>
           </div>
 

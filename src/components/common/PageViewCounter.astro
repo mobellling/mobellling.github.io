@@ -1,0 +1,135 @@
+---
+/**
+ * Loads site/post view counts from Vercount after the page becomes idle.
+ *
+ * The markup lives in the footer and in SinglePost.astro:
+ *   <span data-view-count="site">—</span>
+ *   <span data-view-count="page">—</span>
+ *
+ * Vercount is a small CORS/JSON counter service, so this works on a purely
+ * static site. The request is delayed, non-blocking, and failures leave the
+ * `—` placeholder in place.
+ */
+---
+
+<script>
+  type VercountPayload = {
+    site_pv?: number | string;
+    page_pv?: number | string;
+    site_uv?: number | string;
+  };
+
+  type VercountResponse = VercountPayload & {
+    status?: string;
+    data?: VercountPayload;
+  };
+
+  const COUNTER_SELECTOR = '[data-view-count]';
+  const API_URL = 'https://events.vercount.one/api/v2/log';
+  const REQUEST_TIMEOUT = 5000;
+  const DEDUPE_MS = 2000;
+  const numberFormat = new Intl.NumberFormat('zh-CN');
+
+  let scheduled = false;
+  let inFlight = false;
+  let pendingRefresh = false;
+  let lastRequestKey = '';
+  let lastRequestAt = 0;
+
+  function hasCounters(): boolean {
+    return document.querySelector(COUNTER_SELECTOR) !== null;
+  }
+
+  function applyCounts(payload: VercountPayload): void {
+    for (const node of document.querySelectorAll<HTMLElement>(COUNTER_SELECTOR)) {
+      const kind = node.dataset.viewCount;
+      const raw = kind === 'site' ? payload.site_pv : kind === 'page' ? payload.page_pv : undefined;
+      const value = Number(raw);
+      if (Number.isFinite(value) && value >= 0) {
+        node.textContent = numberFormat.format(value);
+        node.dataset.viewCountLoaded = 'true';
+      }
+    }
+  }
+
+  function currentPageKey(): string {
+    return `${window.location.origin}${window.location.pathname}${window.location.search}`;
+  }
+
+  function scheduleRefresh(): void {
+    if (!hasCounters() || scheduled) return;
+
+    scheduled = true;
+    const run = () => {
+      scheduled = false;
+      void requestCounts();
+    };
+
+    const idle = (
+      window as Window & {
+        requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      }
+    ).requestIdleCallback;
+
+    if (typeof idle === 'function') {
+      idle(run, { timeout: 2500 });
+    } else {
+      window.setTimeout(run, 900);
+    }
+  }
+
+  async function requestCounts(): Promise<void> {
+    if (!hasCounters()) return;
+
+    const key = currentPageKey();
+    const now = Date.now();
+
+    // `astro:page-load` and the initial fallback can both run for one view.
+    if (key === lastRequestKey && now - lastRequestAt < DEDUPE_MS) return;
+
+    if (inFlight) {
+      // A different page was opened while the previous request was running.
+      if (key !== lastRequestKey) pendingRefresh = true;
+      return;
+    }
+
+    lastRequestKey = key;
+    lastRequestAt = now;
+    inFlight = true;
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: key, isNewUv: false }),
+        signal: controller.signal,
+        credentials: 'omit',
+        cache: 'no-store',
+        referrerPolicy: 'no-referrer',
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const result = (await response.json()) as VercountResponse;
+      applyCounts(result.data ?? result);
+    } catch {
+      // Keep the em dash placeholder; counting must never affect the page.
+    } finally {
+      window.clearTimeout(timer);
+      inFlight = false;
+      if (pendingRefresh) {
+        pendingRefresh = false;
+        scheduleRefresh();
+      }
+    }
+  }
+
+  const instanceWindow = window as Window & { __pageViewCounterInstalled?: boolean };
+  if (!instanceWindow.__pageViewCounterInstalled) {
+    instanceWindow.__pageViewCounterInstalled = true;
+    document.addEventListener('astro:page-load', scheduleRefresh);
+    if (document.readyState !== 'loading') scheduleRefresh();
+  }
+</script>
