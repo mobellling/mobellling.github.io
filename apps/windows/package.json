@@ -1,0 +1,21 @@
+{
+  "name": "mobellsite",
+  "productName": "MobellSite",
+  "version": "1.0.0",
+  "description": "MobellSite 桌面客户端（Electron，免安装绿色版）",
+  "main": "main.mjs",
+  "private": true,
+  "author": "Mobell",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "selftest": "electron . --selftest",
+    "test-notify": "electron . --test-notify",
+    "test": "node --test \"tests/**/*.test.mjs\"",
+    "package": "powershell -NoProfile -File build.ps1"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "45.2.2"
+  }
+}

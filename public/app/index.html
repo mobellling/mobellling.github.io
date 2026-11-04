@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MobellSite 客户端下载</title>
+    <meta name="description" content="MobellSite 网站客户端：Windows 免安装压缩包与 Android APK 下载。" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --fg: #0f172a;
+        --muted: #64748b;
+        --card: #ffffff;
+        --line: #e2e8f0;
+        --brand: #014ecb;
+        --brand-soft: #eff6ff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b1220;
+          --fg: #e2e8f0;
+          --muted: #94a3b8;
+          --card: #111a2b;
+          --line: #1e293b;
+          --brand: #60a5fa;
+          --brand-soft: #10203a;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          16px/1.7 -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          'PingFang SC',
+          'Microsoft YaHei',
+          sans-serif;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 40px 20px 72px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 8px;
+      }
+      header img {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+      }
+      h1 {
+        font-size: 30px;
+        line-height: 1.2;
+        margin: 0;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 8px 0 32px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 18px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px;
+      }
+      .card h2 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      .badge {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--brand);
+        background: var(--brand-soft);
+        border-radius: 999px;
+        padding: 2px 10px;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 0 16px;
+        word-break: break-all;
+      }
+      .btn {
+        display: inline-block;
+        background: var(--brand);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 11px 20px;
+        margin: 4px 0 16px;
+      }
+      .btn[aria-disabled='true'] {
+        opacity: 0.55;
+        pointer-events: none;
+      }
+      ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      li + li {
+        margin-top: 6px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 12px;
+        background: var(--brand-soft);
+        color: var(--brand);
+        padding: 2px 6px;
+        border-radius: 6px;
+        word-break: break-all;
+      }
+      .note {
+        margin-top: 26px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .note h3 {
+        color: var(--fg);
+        font-size: 16px;
+        margin: 0 0 8px;
+      }
+      footer {
+        margin-top: 40px;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      a {
+        color: var(--brand);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="/images/logo.svg" alt="MobellSite" />
+        <div>
+          <h1>MobellSite 客户端</h1>
+          <p class="sub" style="margin: 2px 0 0">
+            把网站装进应用：完整功能、离线快照、网站更新提醒、软件更新检查。
+          </p>
+        </div>
+      </header>
+
+      <div class="grid">
+        <section class="card" aria-labelledby="win-title">
+          <h2 id="win-title">Windows <span class="badge">免安装</span></h2>
+          <p class="meta">
+            <span id="win-version">版本 1.0.0</span> · <span id="win-size">压缩包</span><br />
+            <span id="win-sha">SHA-256 见下载页更新</span>
+          </p>
+          <a
+            class="btn"
+            id="win-download"
+            href="https://github.com/mobellling/blog/releases/latest/download/MobellSite-1.0.0-windows-x64.zip"
+            >下载 Windows 压缩包</a
+          >
+          <ul>
+            <li>适用 Windows 10 / 11（x64）</li>
+            <li>解压后双击 <code>MobellSite.exe</code> 即可运行</li>
+            <li>关闭窗口会最小化到托盘，右键托盘图标可退出</li>
+            <li>内置网站离线快照，断网也能浏览已发布的内容</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="android-title">
+          <h2 id="android-title">Android <span class="badge">APK</span></h2>
+          <p class="meta">
+            <span id="android-version">版本 1.0.0</span> · <span id="android-size">安装包</span><br />
+            <span id="android-sha">SHA-256 见下载页更新</span>
+          </p>
+          <a
+            class="btn"
+            id="android-download"
+            href="https://github.com/mobellling/blog/releases/latest/download/MobellSite-1.0.0-android.apk"
+            >下载 Android APK</a
+          >
+          <ul>
+            <li>适用 Android 7.0 及以上（无 Google 服务依赖）</li>
+            <li>安装时如提示「未知来源」，允许浏览器/文件管理器安装即可</li>
+            <li>支持离线浏览、网站更新与软件更新通知</li>
+            <li>首次启动会请求通知权限，拒绝后仍可在应用内看到更新提示</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="note">
+        <h3>更新方式</h3>
+        <p>
+          网站有新内容时，应用会弹出「网站已更新」提醒，点击即可刷新到最新内容。软件自身更新会提示新版本号，点击后在浏览器下载新的
+          zip / APK 覆盖安装即可。
+        </p>
+        <p>
+          iOS 版本将在后续提供。所有安装包均托管在
+          <a href="https://github.com/mobellling/blog/releases" rel="noopener">GitHub Releases</a>。
+        </p>
+      </div>
+
+      <footer>
+        <a href="/">← 返回 MobellSite 首页</a>
+      </footer>
+    </main>
+
+    <script>
+      (async () => {
+        const formatSize = (bytes) => {
+          if (!bytes || bytes <= 0) return null;
+          const mb = bytes / 1024 / 1024;
+          return mb >= 1 ? `${mb.toFixed(1)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
+        };
+        try {
+          const res = await fetch('/app/latest.json?_t=' + Date.now(), { cache: 'no-store' });
+          if (!res.ok) return;
+          const data = await res.json();
+          for (const [platform, prefix] of [
+            ['windows', 'win'],
+            ['android', 'android'],
+          ]) {
+            const app = data?.apps?.[platform];
+            if (!app) continue;
+            const version = document.getElementById(prefix + '-version');
+            const size = document.getElementById(prefix + '-size');
+            const sha = document.getElementById(prefix + '-sha');
+            const download = document.getElementById(prefix + '-download');
+            if (version && app.version) version.textContent = '版本 ' + app.version;
+            if (size && app.size) size.textContent = formatSize(app.size);
+            if (sha && app.sha256) sha.textContent = 'SHA-256 ' + app.sha256;
+            if (download && app.url) download.href = app.url;
+          }
+        } catch {
+          /* 离线或清单缺失时保留静态内容 */
+        }
+      })();
+    </script>
+  </body>
+</html>

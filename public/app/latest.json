@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "updatedAt": "2026-11-04T00:05:00.000Z",
+  "siteUrl": "https://mobellling.github.io/",
+  "apps": {
+    "windows": {
+      "version": "1.0.0",
+      "url": "https://github.com/mobellling/blog/releases/latest/download/MobellSite-1.0.0-windows-x64.zip",
+      "sha256": "191833deed4324eee149ae719add0310b54ea753c461d6d5233d730c8e9b9249",
+      "size": 173345465,
+      "notes": "首个版本：内置网站离线快照、网站更新提醒、软件更新检查。"
+    },
+    "android": {
+      "version": "1.0.0",
+      "url": "https://github.com/mobellling/blog/releases/latest/download/MobellSite-1.0.0-android.apk",
+      "sha256": "ccd1c14dbc58d540a6327724ffc8bb050847708935a9a54d3d40a158feccf495",
+      "size": 16796153,
+      "notes": "首个版本：内置网站离线快照、网站更新提醒、软件更新检查。"
+    }
+  }
+}

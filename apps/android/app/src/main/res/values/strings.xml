@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MobellSite</string>
+
+    <string name="status_online">在线</string>
+    <string name="status_offline">离线</string>
+
+    <string name="action_refresh">刷新</string>
+    <string name="action_reconnect">重新连接在线站点</string>
+    <string name="action_check_site">检查网站更新</string>
+    <string name="action_check_app">检查软件更新</string>
+    <string name="action_about">关于</string>
+
+    <string name="title_about">关于 MobellSite</string>
+</resources>

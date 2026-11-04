@@ -26,3 +26,20 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 
 .astro
+
+# desktop / mobile app build artifacts (see docs/apps/APP-SPEC.md)
+# Installers are delivered through releases/ on disk and GitHub Releases, not git.
+apps/windows/node_modules/
+apps/windows/dist-package/
+apps/windows/out/
+apps/windows/.electron-cache/
+# 内置站点快照由 build.ps1 从 dist/ 重新生成，不入库（避免仓库里存两份 19MB 站点）
+apps/windows/site/
+apps/android/app/src/main/assets/www/
+apps/android/.toolchain/
+apps/android/.build/
+apps/android/build/
+releases/
+
+# keep the Android signing key: it is required for future APK updates
+!apps/android/keystore/mobellsite.keystore
