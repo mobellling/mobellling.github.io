@@ -43,3 +43,6 @@ releases/
 
 # keep the Android signing key: it is required for future APK updates
 !apps/android/keystore/mobellsite.keystore
+
+# tmp
+.tmp
