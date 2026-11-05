@@ -1,0 +1,148 @@
+---
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import Image from '~/components/common/Image.astro';
+
+import { findLatestPosts } from '~/utils/blog';
+import { findImage } from '~/utils/images';
+import { formatMomentDate, getPublishedMoments } from '~/utils/moments';
+import { getAsset, getBlogPermalink, getPermalink } from '~/utils/permalinks';
+
+const [moments, posts] = await Promise.all([getPublishedMoments(), findLatestPosts({ count: 1 })]);
+const moment = moments[0] || null;
+const post = posts[0] || null;
+const postImage = post ? await findImage(post.image) : null;
+
+const momentImage = moment?.images?.length
+  ? /^https?:\/\//.test(moment.images[0])
+    ? moment.images[0]
+    : getAsset(moment.images[0])
+  : null;
+
+const postDate = post
+  ? new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(post.publishDate))
+  : '';
+---
+
+<WidgetWrapper id="recent" containerClass="pt-2 md:pt-4 lg:pt-6">
+  <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-wide text-primary">Recent</p>
+      <h2 class="font-heading text-3xl font-bold tracking-tight sm:text-4xl">最近</h2>
+    </div>
+    <div class="flex gap-5 text-sm font-medium">
+      <a class="text-primary hover:underline" href={getPermalink('/moments/')}>全部动态 →</a>
+      <a class="text-primary hover:underline" href={getBlogPermalink()}>全部文章 →</a>
+    </div>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <a
+      href={moment?.url || getPermalink('/moments/')}
+      class="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+    >
+      <div class="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-slate-800">
+        {
+          momentImage ? (
+            <img
+              src={momentImage}
+              alt={moment?.text || '最新动态'}
+              class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
+              <span class="font-heading text-5xl text-primary/30">✦</span>
+            </div>
+          )
+        }
+        <span
+          class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
+        >
+          动态
+        </span>
+      </div>
+
+      <div class="flex flex-1 flex-col p-6">
+        {
+          moment ? (
+            <>
+              <time datetime={moment.date.toISOString()} class="text-xs text-muted dark:text-slate-400">
+                {formatMomentDate(moment.date)}
+              </time>
+              <p class="mt-2 line-clamp-3 text-base leading-relaxed text-default dark:text-slate-300">
+                {moment.text || '分享了一张图片。'}
+              </p>
+            </>
+          ) : (
+            <>
+              <p class="text-base font-medium text-default dark:text-slate-200">还没有动态</p>
+              <p class="mt-1 text-sm leading-relaxed text-muted dark:text-slate-400">
+                第一条日常，可能是一张照片，也可能只是一句话。
+              </p>
+            </>
+          )
+        }
+        <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+          {moment ? '查看与留言' : '去动态页看看'} <span aria-hidden="true">→</span>
+        </span>
+      </div>
+    </a>
+
+    <a
+      href={post ? getPermalink(post.permalink, 'post') : getBlogPermalink()}
+      class="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+    >
+      <div class="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-slate-800">
+        {
+          postImage ? (
+            <Image
+              src={postImage}
+              alt={post?.title || '最新文章'}
+              class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              widths={[400, 900]}
+              width={900}
+              height={506}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              format="webp"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
+              <span class="font-heading text-5xl text-primary/30">✎</span>
+            </div>
+          )
+        }
+        <span
+          class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
+        >
+          文章
+        </span>
+      </div>
+
+      <div class="flex flex-1 flex-col p-6">
+        {
+          post ? (
+            <>
+              <time datetime={new Date(post.publishDate).toISOString()} class="text-xs text-muted dark:text-slate-400">
+                {postDate}
+              </time>
+              <h3 class="mt-2 font-heading text-xl font-bold leading-snug text-default group-hover:text-primary dark:text-slate-200">
+                {post.title}
+              </h3>
+              {post.excerpt && (
+                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted dark:text-slate-400">{post.excerpt}</p>
+              )}
+            </>
+          ) : (
+            <p class="text-base font-medium text-default dark:text-slate-200">还没有文章</p>
+          )
+        }
+        <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+          阅读全文 <span aria-hidden="true">→</span>
+        </span>
+      </div>
+    </a>
+  </div>
+</WidgetWrapper>

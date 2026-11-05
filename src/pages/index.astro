@@ -2,6 +2,7 @@
 import Layout from '~/layouts/PageLayout.astro';
 import { getPermalink, getBlogPermalink, getAsset } from '../utils/permalinks';
 import Hero from '~/components/widgets/Hero.astro';
+import HomeRecent from '~/components/widgets/HomeRecent.astro';
 import Note from '~/components/widgets/Note.astro';
 import Features from '~/components/widgets/Features.astro';
 import QuickStart from '~/components/widgets/QuickStart.astro';
@@ -89,5 +90,7 @@ const structuredData = [
       你可以在这里找到blog，之后或许我会添加一点新内容？
     </Fragment>
   </Hero>
+
+  <HomeRecent />
   
 </Layout>
