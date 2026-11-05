@@ -151,3 +151,10 @@
   background-color: var(--shiki-dark-bg) !important;
 }
 
+/* Reserve the comments area before giscus reports its height, so loading
+   comments never pushes the article/footer around. */
+.giscus,
+.giscus iframe {
+  min-height: 320px;
+}
+

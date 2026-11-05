@@ -16,6 +16,7 @@ import type { AstroIntegration } from 'astro';
 import astrowind from './vendor/integration';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
+import rehypeImageSize from './src/utils/rehype-image-size';
 
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -49,6 +50,8 @@ export default defineConfig({
       styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['sans-serif'],
+      display: 'optional',
+      optimizedFallbacks: true,
     },
   ],
 
@@ -124,7 +127,7 @@ export default defineConfig({
 
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypeImageSize],
     processor: unified({
       remarkPlugins: [readingTimeRemarkPlugin],
       rehypePlugins: [responsiveTablesRehypePlugin],
