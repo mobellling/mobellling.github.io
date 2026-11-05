@@ -1,0 +1,43 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Breadcrumbs from '~/components/common/Breadcrumbs.astro';
+import Headline from '~/components/blog/Headline.astro';
+import MomentCard from '~/components/moments/MomentCard.astro';
+import { getPermalink } from '~/utils/permalinks';
+import { getPublishedMoments } from '~/utils/moments';
+
+export const prerender = true;
+
+const moments = await getPublishedMoments();
+
+const metadata = {
+  title: '动态',
+  description: '日常的碎片、照片和想法。',
+};
+
+const breadcrumbs = [
+  { text: 'Home', href: getPermalink('/') },
+  { text: '动态' },
+];
+---
+
+<Layout metadata={metadata}>
+  <Breadcrumbs bar items={breadcrumbs} />
+  <section class="px-6 py-12 sm:py-16 lg:py-20 mx-auto max-w-3xl">
+    <Headline subtitle="日常的碎片、照片和想法">动态</Headline>
+
+    {
+      moments.length === 0 ? (
+        <div class="rounded-2xl border border-dashed border-gray-300 dark:border-slate-600 px-6 py-16 text-center">
+          <p class="text-lg text-muted dark:text-slate-400">还没有动态，过几天再来看看。</p>
+        </div>
+      ) : (
+        <div class="space-y-6">
+          {moments.map((moment) => (
+            <MomentCard moment={moment} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</Layout>

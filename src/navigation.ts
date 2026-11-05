@@ -7,7 +7,11 @@ export const headerData = {
     {
       text: '主页',
       href: '/', // 指向你的首页
-    },    
+    },
+    {
+      text: '动态',
+      href: '/moments/',
+    },
        {
       text: '博客',
       links: [

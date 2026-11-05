@@ -1,0 +1,93 @@
+---
+import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
+
+import Layout from '~/layouts/PageLayout.astro';
+import Breadcrumbs from '~/components/common/Breadcrumbs.astro';
+import Giscus from '~/components/moments/Giscus.astro';
+import { getAsset, getPermalink } from '~/utils/permalinks';
+import { formatMomentDate, getPublishedMoments, type Moment } from '~/utils/moments';
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+  const moments = await getPublishedMoments();
+  return moments.map((moment) => ({
+    params: { id: moment.id },
+    props: { moment },
+  }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { moment } = Astro.props as { moment: Moment };
+const Content = moment.Content;
+
+const images = moment.images
+  .map((image) => (image.startsWith('http://') || image.startsWith('https://') ? image : getAsset(image)))
+  .filter(Boolean);
+
+const metadata = {
+  title: `动态 · ${formatMomentDate(moment.date)}`,
+  description: moment.text.slice(0, 155),
+  openGraph: {
+    type: 'article',
+    article: { publishedTime: moment.date.toISOString() },
+  },
+};
+
+const breadcrumbs = [
+  { text: 'Home', href: getPermalink('/') },
+  { text: '动态', href: getPermalink('/moments/') },
+  { text: formatMomentDate(moment.date) },
+];
+---
+
+<Layout metadata={metadata}>
+  <Breadcrumbs bar items={breadcrumbs} />
+  <section class="px-6 py-12 sm:py-16 lg:py-20 mx-auto max-w-3xl">
+    <a
+      href={getPermalink('/moments/')}
+      class="inline-flex items-center gap-1 text-sm text-muted dark:text-slate-400 hover:text-primary dark:hover:text-blue-400"
+    >
+      <span aria-hidden="true">←</span> 返回动态
+    </a>
+
+    <article class="mt-6">
+      <time datetime={moment.date.toISOString()} class="text-sm text-muted dark:text-slate-400">
+        {formatMomentDate(moment.date)}
+      </time>
+
+      <div
+        class="prose lg:prose-xl max-w-none dark:prose-invert prose-headings:font-heading prose-headings:tracking-tighter prose-headings:font-bold prose-a:text-primary dark:prose-a:text-blue-400 prose-img:rounded-md prose-img:shadow-lg mt-4"
+      >
+        <Content />
+      </div>
+
+      {
+        images.length > 0 && (
+          <div
+            class={`mt-6 grid gap-3 ${images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}
+          >
+            {images.map((image, index) => (
+              <a
+                href={image}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block overflow-hidden rounded-lg bg-gray-100 dark:bg-slate-800"
+              >
+                <img
+                  src={image}
+                  alt={`动态图片 ${index + 1}`}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-cover aspect-[4/3]"
+                />
+              </a>
+            ))}
+          </div>
+        )
+      }
+
+      <Giscus />
+    </article>
+  </section>
+</Layout>

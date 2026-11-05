@@ -1,0 +1,67 @@
+---
+import { getPermalink, getAsset } from '~/utils/permalinks';
+import { formatMomentDate, type Moment } from '~/utils/moments';
+
+export interface Props {
+  moment: Moment;
+}
+
+const { moment } = Astro.props;
+const Content = moment.Content;
+const images = moment.images
+  .map((image) => (image.startsWith('http://') || image.startsWith('https://') ? image : getAsset(image)))
+  .filter(Boolean);
+const permalink = getPermalink(`/moments/${moment.id}/`);
+---
+
+<article
+  class="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-6 sm:p-7 shadow-sm"
+>
+  <header class="flex items-center gap-2 text-sm text-muted dark:text-slate-400">
+    <time datetime={moment.date.toISOString()} class="inline-flex items-center gap-1">
+      {formatMomentDate(moment.date)}
+    </time>
+    <span aria-hidden="true">·</span>
+    <span>动态</span>
+  </header>
+
+  <div class="mt-3 prose prose-lg max-w-none dark:prose-invert prose-p:my-2 prose-a:text-primary dark:prose-a:text-blue-400">
+    <Content />
+  </div>
+
+  {
+    images.length > 0 && (
+      <div
+        class={`mt-4 grid gap-2 ${images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}
+      >
+        {images.map((image, index) => (
+          <a
+            href={image}
+            class="block overflow-hidden rounded-lg bg-gray-100 dark:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={image}
+              alt={`动态图片 ${index + 1}`}
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-cover aspect-[4/3] transition duration-200 hover:scale-[1.02]"
+            />
+          </a>
+        ))}
+      </div>
+    )
+  }
+
+  <footer class="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800 text-sm">
+    <a
+      href={permalink}
+      class="inline-flex items-center gap-1 text-primary dark:text-blue-400 hover:underline"
+      aria-label="查看这条动态并留言"
+    >
+      查看与留言
+      <span aria-hidden="true">→</span>
+    </a>
+  </footer>
+</article>

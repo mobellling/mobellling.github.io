@@ -68,6 +68,17 @@ const postCollection = defineCollection({
   }),
 });
 
+const momentCollection = defineCollection({
+  loader: glob({ pattern: '*.md', base: 'src/data/moments' }),
+  schema: z.object({
+    date: z.date(),
+    /** Public paths (`/images/...`) or absolute URLs, rendered in order. */
+    images: z.array(z.string()).default([]),
+    draft: z.boolean().optional(),
+  }),
+});
+
 export const collections = {
   post: postCollection,
+  moments: momentCollection,
 };
