@@ -3,7 +3,7 @@ publishDate: 2026-11-05T22:00:00Z
 author: Mobell
 title: 对矩阵几何意义的思考
 excerpt: 矩阵真的只是一个数表吗？为什么乘法要“行乘列”，单位矩阵为什么长那样，行列式又凭什么等于面积？这篇文章按我学习时的困惑顺序，从向量、基向量一路画到特征向量，尽量说人话地聊聊矩阵的几何意义。
-image: '~/assets/images/blog/matrix-cover.png'
+image: 'https://mobellling.github.io/-image-/matrix.webp'
 imageAlt: 深色背景上的网格与两个基向量箭头，示意一个线性变换
 category: Host
 tags:
