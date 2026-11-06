@@ -1,0 +1,85 @@
+---
+/**
+ * Shared Giscus comments for blog posts and moments.
+ *
+ * Keeping the integration here means page templates only need to render this
+ * component. The client-side part also re-mounts Giscus after Astro View
+ * Transitions and keeps its built-in light/dark theme in sync with the site.
+ */
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<section
+  class={`comments-panel mt-14 border-t border-gray-200/80 pt-8 dark:border-slate-700/80 ${className}`}
+  aria-labelledby="comments-title"
+>
+  <div class="mb-5 flex items-start justify-between gap-4">
+    <div>
+      <p class="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 dark:text-blue-400/80">讨论区</p>
+      <h2 id="comments-title" class="font-heading text-2xl font-bold tracking-tight text-heading">留下你的想法</h2>
+      <p class="mt-2 text-sm leading-6 text-muted dark:text-slate-400">
+        评论由 GitHub Discussions 提供，需要登录 GitHub 账号；每篇内容都有独立的讨论串。
+      </p>
+    </div>
+    <span class="hidden shrink-0 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs text-primary sm:inline-flex dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-300">
+      GitHub Discussions
+    </span>
+  </div>
+
+  <div class="giscus min-h-[320px] rounded-2xl border border-gray-200/70 bg-white/50 p-3 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/40 sm:p-5" data-giscus-container></div>
+</section>
+
+<script>
+  const GISCUS_CONFIG = {
+    src: 'https://giscus.app/client.js',
+    repo: 'mobellling/mobellling.github.io',
+    repoId: 'R_kgDOVU1Z4g',
+    category: 'Announcements',
+    categoryId: 'DIC_kwDOVU1Z4s4DJfbN',
+  };
+
+  const getGiscusTheme = () => (document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+
+  const mountGiscus = () => {
+    const container = document.querySelector<HTMLElement>('[data-giscus-container]');
+    if (!container || container.querySelector('script')) return;
+
+    const script = document.createElement('script');
+    script.src = GISCUS_CONFIG.src;
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.dataset.repo = GISCUS_CONFIG.repo;
+    script.dataset.repoId = GISCUS_CONFIG.repoId;
+    script.dataset.category = GISCUS_CONFIG.category;
+    script.dataset.categoryId = GISCUS_CONFIG.categoryId;
+    script.dataset.mapping = 'pathname';
+    script.dataset.strict = '0';
+    script.dataset.reactionsEnabled = '1';
+    script.dataset.emitMetadata = '0';
+    script.dataset.inputPosition = 'top';
+    script.dataset.theme = getGiscusTheme();
+    script.dataset.lang = 'zh-CN';
+    script.dataset.loading = 'lazy';
+    container.appendChild(script);
+  };
+
+  const syncGiscusTheme = () => {
+    const frame = document.querySelector<HTMLIFrameElement>('.giscus-frame');
+    frame?.contentWindow?.postMessage(
+      { giscus: { setConfig: { theme: getGiscusTheme() } } },
+      'https://giscus.app'
+    );
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    mountGiscus();
+    window.setTimeout(syncGiscusTheme, 100);
+  });
+  document.addEventListener('aw:theme-change', syncGiscusTheme);
+
+  mountGiscus();
+</script>

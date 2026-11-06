@@ -3,7 +3,7 @@ import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
 
 import Layout from '~/layouts/PageLayout.astro';
 import Breadcrumbs from '~/components/common/Breadcrumbs.astro';
-import Giscus from '~/components/moments/Giscus.astro';
+import Comments from '~/components/common/Comments.astro';
 import { getAsset, getPermalink } from '~/utils/permalinks';
 import { formatMomentDate, getPublishedMoments, type Moment } from '~/utils/moments';
 
@@ -89,7 +89,7 @@ const breadcrumbs = [
         )
       }
 
-      <Giscus />
+      <Comments />
     </article>
   </section>
 </Layout>

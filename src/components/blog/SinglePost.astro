@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css';
 import Image from '~/components/common/Image.astro';
 import PostTags from '~/components/blog/Tags.astro';
 import SocialShare from '~/components/common/SocialShare.astro';
+import Comments from '~/components/common/Comments.astro';
 
 import { getPermalink } from '~/utils/permalinks';
 import { getFormattedDate } from '~/utils/utils';
@@ -127,9 +128,7 @@ const coverSize =
       <slot />
     </div>
   </article>
-  <div class="text-center">
-    <p2>没有出现评论区请刷新</p2>
-  </div>
+  <Comments class="mx-auto max-w-3xl px-6 sm:px-6" />
 </section>
 
 <!-- <script>
