@@ -1,0 +1,63 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Breadcrumbs from '~/components/common/Breadcrumbs.astro';
+import Headline from '~/components/blog/Headline.astro';
+import { fetchPosts } from '~/utils/blog';
+import { getPermalink } from '~/utils/permalinks';
+import { getFormattedDate } from '~/utils/utils';
+
+const posts = await fetchPosts();
+const groups = posts.reduce(
+  (result, post) => {
+    const year = String(post.publishDate.getFullYear());
+    const month = `${post.publishDate.getFullYear()}-${String(post.publishDate.getMonth() + 1).padStart(2, '0')}`;
+    const group = result.find((item) => item.month === month);
+    if (group) group.posts.push(post);
+    else result.push({ year, month, posts: [post] });
+    return result;
+  },
+  [] as { year: string; month: string; posts: typeof posts }[]
+);
+
+const metadata = {
+  title: '归档',
+  description: '按时间整理发布过的博客文章。',
+};
+---
+
+<Layout metadata={metadata}>
+  <Breadcrumbs bar items={[{ text: '主页', href: getPermalink('/') }, { text: '其他' }, { text: '归档' }]} />
+  <section class="mx-auto max-w-4xl px-6 py-12 sm:py-16 lg:py-20">
+    <Headline subtitle="按时间顺序，回看写过的每一篇文章">归档</Headline>
+
+    <div class="mt-10 space-y-10">
+      {
+        groups.map((group) => (
+          <section aria-labelledby={`archive-${group.month}`}>
+            <div class="mb-4 flex items-center gap-3">
+              <h2 id={`archive-${group.month}`} class="font-heading text-2xl font-bold text-heading">
+                {group.month}
+              </h2>
+              <span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                {group.posts.length} 篇
+              </span>
+            </div>
+            <div class="site-surface divide-y divide-gray-200/70 overflow-hidden rounded-[var(--aw-radius-card)] border dark:divide-slate-700/70">
+              {group.posts.map((post) => (
+                <a
+                  class="group flex flex-col gap-2 px-5 py-4 transition hover:bg-primary/5 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+                  href={getPermalink(post.permalink, 'post')}
+                >
+                  <span class="font-medium text-heading transition group-hover:text-primary">{post.title}</span>
+                  <time datetime={post.publishDate.toISOString()} class="shrink-0 text-sm text-muted">
+                    {getFormattedDate(post.publishDate)}
+                  </time>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

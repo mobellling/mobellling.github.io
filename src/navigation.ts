@@ -1,9 +1,7 @@
 import { getPermalink, getBlogPermalink, getAsset } from './utils/permalinks';
 
 export const headerData = {
-
   links: [
-    
     {
       text: '主页',
       href: '/', // 指向你的首页
@@ -12,7 +10,7 @@ export const headerData = {
       text: '动态',
       href: '/moments/',
     },
-       {
+    {
       text: '博客',
       links: [
         {
@@ -52,6 +50,14 @@ export const headerData = {
         {
           text: '友链',
           href: getPermalink('/other/friends'),
+        },
+        {
+          text: '更新日志',
+          href: getPermalink('/other/changelog'),
+        },
+        {
+          text: '归档',
+          href: getPermalink('/other/archive'),
         },
         // {
         //   text: 'Personal',
@@ -121,7 +127,6 @@ export const headerData = {
     //     },
     //   ],
     // },
- 
   ],
   // actions: [{ text: 'Download', href: 'https://github.com/arthelokyo/astrowind', target: '_blank' }],
 };
@@ -150,21 +155,21 @@ export const footerData = {
     // },
     {
       title: '资源',
-      
+
       links: [
         { text: 'Astro相关文档', href: 'https://docs.astro.build/en/getting-started/' },
         { text: '图片转webp', href: 'https://wefreestar.com/zh/toolbox/image-to-webp' },
         { text: 'webp裁切', href: 'https://imageresizer.com/zh/%E8%A3%81%E5%89%AA-webp' },
         { text: '文本加空行', href: 'https://uutool.cn/list-new-line' },
-        { text: 'DeepSeek API文档', herf:'https://api-docs.deepseek.com/zh-cn/' },
+        { text: 'DeepSeek API文档', herf: 'https://api-docs.deepseek.com/zh-cn/' },
       ],
     },
     {
       title: '特别鸣谢',
       target: '_blank',
       links: [
-        { text: 'neonmz', href: 'https://neonmz.github.io/', },
-       
+        { text: 'neonmz', href: 'https://neonmz.github.io/' },
+
         // { text: 'Report an issue', href: 'https://github.com/arthelokyo/astrowind/issues' },
         // { text: 'License', href: 'https://github.com/arthelokyo/astrowind/blob/main/LICENSE.md' },
       ],

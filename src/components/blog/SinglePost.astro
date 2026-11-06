@@ -27,13 +27,12 @@ const coverSize =
 ---
 
 <section class="py-8 sm:py-16 lg:py-20 mx-auto">
-  <article data-pagefind-body>
-   
+  <article data-pagefind-body data-pagefind-filter="type:博客">
     <div class="mx-auto px-6 sm:px-6 max-w-3xl mt-8 flex justify-between flex-col sm:flex-row">
       <PostTags tags={post.tags} class="mr-5 rtl:mr-0 rtl:ml-5" />
       <SocialShare url={url} text={post.title} class="mt-5 sm:mt-1 align-middle text-gray-500 dark:text-slate-600" />
     </div>
-    
+
     <header>
       <div class="flex justify-between flex-col sm:flex-row max-w-3xl mx-auto mt-0 mb-2 px-4 sm:px-6 sm:items-center">
         <p>
@@ -87,14 +86,14 @@ const coverSize =
             </span>
           </>
         </p>
-          </div>
+      </div>
 
       <h1
         class="px-4 sm:px-6 max-w-3xl mx-auto text-4xl md:text-5xl font-bold leading-tighter tracking-tighter font-heading"
       >
         {post.title}
       </h1>
-      
+
       <p
         class="max-w-3xl mx-auto mt-4 mb-8 px-4 sm:px-6 text-xl md:text-2xl text-muted dark:text-slate-400 text-pretty"
       >
@@ -127,11 +126,10 @@ const coverSize =
     >
       <slot />
     </div>
-    
   </article>
-<div class="text-center">
-<p2>没有出现评论区请刷新</p2>
-</div>
+  <div class="text-center">
+    <p2>没有出现评论区请刷新</p2>
+  </div>
 </section>
 
 <!-- <script>

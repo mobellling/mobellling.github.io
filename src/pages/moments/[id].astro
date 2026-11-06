@@ -51,7 +51,7 @@ const breadcrumbs = [
       <span aria-hidden="true">←</span> 返回动态
     </a>
 
-    <article class="mt-6">
+    <article class="mt-6" data-pagefind-body data-pagefind-filter="type:动态">
       <time datetime={moment.date.toISOString()} class="text-sm text-muted dark:text-slate-400">
         {formatMomentDate(moment.date)}
       </time>

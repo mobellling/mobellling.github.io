@@ -8,11 +8,12 @@ const metadata = {
 
 <Layout metadata={metadata}>
   <section class="px-6 py-12 max-w-3xl mx-auto min-h-[60vh]">
-    <h1 class="text-3xl font-bold mb-8 text-heading">全站搜索</h1>
+    <h1 class="text-3xl font-bold mb-3 text-heading">全站搜索</h1>
+    <p class="mb-8 text-muted">搜索博客文章和动态，可按内容类型筛选。</p>
 
     <!-- 1. 引入 Pagefind 的 CSS 样式 -->
     <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-    
+
     <!-- 2. 放置搜索挂载点 -->
     <div id="search"></div>
 
@@ -20,18 +21,19 @@ const metadata = {
     <script is:inline src="/pagefind/pagefind-ui.js"></script>
     <script is:inline>
       document.addEventListener('astro:page-load', (event) => {
-        new PagefindUI({ 
-          element: '#search', 
+        new PagefindUI({
+          element: '#search',
           showSubResults: true,
+          showFilters: { type: '内容类型' },
           // 优化中文搜索体验
           translations: {
-            placeholder: "搜索文章标题、内容或标签...",
-            clear_search: "清除",
-            load_more: "加载更多结果",
-            search_label: "搜索此网站",
-            zero_results: "没有找到与 [SEARCH_TERM] 相关的结果",
-            count_results: "找到 [COUNT] 个相关结果"
-          }
+            placeholder: '搜索文章、动态标题或内容...',
+            clear_search: '清除',
+            load_more: '加载更多结果',
+            search_label: '搜索此网站',
+            zero_results: '没有找到与 [SEARCH_TERM] 相关的结果',
+            count_results: '找到 [COUNT] 个相关结果',
+          },
         });
       });
     </script>
