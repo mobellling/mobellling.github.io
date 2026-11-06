@@ -12,30 +12,12 @@ export const headerData = {
     },
     {
       text: '博客',
-      links: [
-        {
-          text: '博客列表',
-          href: getBlogPermalink(),
-        },
-        // {
-        //   text: '文章',
-        //   href: getPermalink('get-started-website-with-astro-tailwind-css', 'post'),
-        // },
-        // {
-        //   text: '投稿',
-        //   href: /page/friend,
-        // },
-        // {
-        //   text: 'Category Page',
-        //   href: getPermalink('tutorials', 'category'),
-        // },
-        {
-          text: '搜索',
-          href: '/search/',
-        },
-      ],
+      href: getBlogPermalink(),
     },
-
+    {
+      text: '搜索',
+      href: '/search/',
+    },
     {
       text: '其他',
       links: [
