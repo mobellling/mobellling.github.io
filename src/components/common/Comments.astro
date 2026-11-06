@@ -57,7 +57,8 @@ const { class: className = '' } = Astro.props;
     script.dataset.category = GISCUS_CONFIG.category;
     script.dataset.categoryId = GISCUS_CONFIG.categoryId;
     script.dataset.mapping = 'pathname';
-    script.dataset.strict = '0';
+    // Require an exact pathname match so similar URLs cannot share a discussion.
+    script.dataset.strict = '1';
     script.dataset.reactionsEnabled = '1';
     script.dataset.emitMetadata = '0';
     script.dataset.inputPosition = 'top';
