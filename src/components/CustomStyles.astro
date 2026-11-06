@@ -21,6 +21,13 @@
 
     --aw-color-bg-page-dark: rgb(8 9 10);
 
+    --aw-color-surface: rgb(255 255 255 / 78%);
+    --aw-color-border: rgb(15 23 42 / 10%);
+    --aw-color-glow: rgb(14 165 233 / 18%);
+    --aw-color-glow-accent: rgb(139 92 246 / 14%);
+    --aw-radius-card: 1.25rem;
+    --aw-shadow-soft: 0 1rem 3rem rgb(15 23 42 / 8%);
+
     ::selection {
       background-color: lavender;
     }
@@ -39,10 +46,46 @@
     --aw-color-text-default: rgb(229 236 246);
     --aw-color-text-muted: rgb(229 236 246 / 66%);
     --aw-color-bg-page: rgb(8 9 10);
+    --aw-color-surface: rgb(15 23 42 / 72%);
+    --aw-color-border: rgb(148 163 184 / 18%);
+    --aw-color-glow: rgb(14 165 233 / 14%);
+    --aw-color-glow-accent: rgb(139 92 246 / 12%);
+    --aw-shadow-soft: 0 1rem 3rem rgb(0 0 0 / 24%);
 
     ::selection {
       background-color: black;
       color: snow;
+    }
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 10% 0%, var(--aw-color-glow), transparent 28rem),
+      radial-gradient(circle at 90% 8%, var(--aw-color-glow-accent), transparent 30rem),
+      linear-gradient(var(--aw-color-bg-page), var(--aw-color-bg-page));
+    background-attachment: fixed;
+  }
+
+  .site-surface {
+    background: color-mix(in srgb, var(--aw-color-bg-page) 82%, transparent);
+    border-color: var(--aw-color-border);
+    box-shadow: var(--aw-shadow-soft);
+    backdrop-filter: blur(14px);
+  }
+
+  :where(a, button, input, textarea, select):focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--aw-color-primary) 45%, transparent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
   }
 </style>

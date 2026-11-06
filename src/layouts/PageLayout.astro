@@ -16,7 +16,6 @@ const { metadata } = Astro.props;
 ---
 
 <Layout metadata={metadata}>
-  
   <slot name="head" slot="head" />
   {
     /*
@@ -29,20 +28,27 @@ const { metadata } = Astro.props;
   }
   {Astro.slots.has('announcement') ? <slot name="announcement" /> : <Announcement />}
   {Astro.slots.has('header') ? <slot name="header" /> : <Header {...headerData} isSticky showRssFeed showToggleTheme />}
-  <main class="flex-1" class="bg-[url('public/background.JPG')] bg-cover bg-center bg-no-repeat py-20">
+  <main class="site-main flex-1 py-10 sm:py-14 lg:py-20">
     <slot />
     <!-- 🟢 把全局 Toast 弱弹窗放在这里，确保全站任何页面都能显示 -->
-  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 ease-out">
-    <div class="bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-sm font-medium px-4 py-2.5 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-2">
-      <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-      <span id="toast-text">已复制到剪贴板！</span>
+    <div
+      id="toast"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300 ease-out"
+    >
+      <div
+        class="bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 text-sm font-medium px-4 py-2.5 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-2"
+      >
+        <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+          ><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg
+        >
+        <span id="toast-text">已复制到剪贴板！</span>
+      </div>
     </div>
-  </div>
   </main>
   {Astro.slots.has('footer') ? <slot name="footer" /> : <Footer {...footerData} />}
 </Layout>
 
 <!-- 引入统计异步脚本 -->
-<script async src="//githubcdn.qiushaocloud.top/gh/qiushaocloud/site-counter@master/dist/qiushaocloud_site_counter.min.js"></script>
-
-
+<script
+  async
+  src="//githubcdn.qiushaocloud.top/gh/qiushaocloud/site-counter@master/dist/qiushaocloud_site_counter.min.js"></script>

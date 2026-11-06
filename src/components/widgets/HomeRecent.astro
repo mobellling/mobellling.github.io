@@ -19,7 +19,9 @@ const momentImage = moment?.images?.length
   : null;
 
 const postDate = post
-  ? new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(post.publishDate))
+  ? new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(
+      new Date(post.publishDate)
+    )
   : '';
 ---
 
@@ -38,7 +40,7 @@ const postDate = post
   <div class="grid gap-6 md:grid-cols-2">
     <a
       href={moment?.url || getPermalink('/moments/')}
-      class="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+      class="card-surface interactive-lift group flex flex-col overflow-hidden rounded-2xl"
     >
       <div class="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-slate-800">
         {
@@ -86,14 +88,15 @@ const postDate = post
           )
         }
         <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-          {moment ? '查看与留言' : '去动态页看看'} <span aria-hidden="true">→</span>
+          {moment ? '查看与留言' : '去动态页看看'}
+          <span aria-hidden="true">→</span>
         </span>
       </div>
     </a>
 
     <a
       href={post ? getPermalink(post.permalink, 'post') : getBlogPermalink()}
-      class="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+      class="card-surface interactive-lift group flex flex-col overflow-hidden rounded-2xl"
     >
       <div class="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-slate-800">
         {

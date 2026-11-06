@@ -70,6 +70,65 @@
   @apply btn border-none shadow-none text-muted hover:text-gray-900 dark:text-gray-400 dark:hover:text-white;
 }
 
+@utility card-surface {
+  @apply border border-gray-200/70 bg-white/75 shadow-sm backdrop-blur-md transition duration-300 dark:border-slate-700/70 dark:bg-slate-900/70;
+}
+
+@utility interactive-lift {
+  @apply transition duration-300 ease-out hover:-translate-y-1 hover:shadow-lg;
+}
+
+.site-main {
+  position: relative;
+  isolation: isolate;
+}
+
+.site-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--aw-color-text-default) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--aw-color-text-default) 5%, transparent) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--aw-color-primary) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--aw-color-primary) 10%, transparent) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse at center, black, transparent 72%);
+}
+
+.hero-orb {
+  animation: aw-float 12s ease-in-out infinite;
+}
+.hero-orb-two {
+  animation-delay: -5s;
+  animation-duration: 15s;
+}
+
+@keyframes aw-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, 18px, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb {
+    animation: none;
+  }
+}
+
 /* Sticky header: solid page background on phones, translucent page background with blur on desktop. */
 #header.scroll > div:first-child {
   @apply bg-page lg:backdrop-blur-md;
@@ -151,10 +210,30 @@
   background-color: var(--shiki-dark-bg) !important;
 }
 
+.prose {
+  --tw-prose-body: var(--aw-color-text-default);
+  --tw-prose-headings: var(--aw-color-text-heading);
+  --tw-prose-links: var(--aw-color-primary);
+  --tw-prose-bold: var(--aw-color-text-heading);
+  --tw-prose-quotes: var(--aw-color-text-default);
+  --tw-prose-quote-borders: color-mix(in oklab, var(--aw-color-primary) 55%, transparent);
+}
+
+.prose :where(blockquote) {
+  border-radius: 0 0.75rem 0.75rem 0;
+  background: color-mix(in srgb, var(--aw-color-primary) 7%, transparent);
+  padding: 0.75rem 1rem;
+}
+
+.prose :where(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 /* Reserve the comments area before giscus reports its height, so loading
    comments never pushes the article/footer around. */
 .giscus,
 .giscus iframe {
   min-height: 320px;
 }
-
