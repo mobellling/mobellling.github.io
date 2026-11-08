@@ -8,6 +8,17 @@ export interface ChangelogEntry {
 /** Add the newest site update at the top of this list. */
 export const changelog: ChangelogEntry[] = [
   {
+    date: '2026-11-08',
+    version: 'v1.8',
+    title: '首页加载与图片性能优化',
+    items: [
+      '首页优先加载并在页面可交互后，后台缓存其他站内页面。',
+      '“最近”区域的图片自动按卡片尺寸转换为 WebP，减少图片体积和加载时间。',
+      '降低非首屏图片的加载优先级，避免图片加载影响按钮响应。',
+      '清理首页未使用的组件导入，保持页面功能不变。',
+    ],
+  },
+  {
     date: '2026-11-06',
     version: 'v1.7',
     title: '全站视觉与内容体验升级',
