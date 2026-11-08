@@ -22,6 +22,7 @@ const momentImage = moment?.images?.length
 // 投稿图片来自外部直链，主页卡片统一请求 900px WebP，避免下载原图。
 // 原始地址仍用于详情页和打开大图，不改变内容质量。
 const optimizeRecentImage = (image: string | null): string | null => {
+  return image;
   if (!image) return null;
   const source = new URL(image, SITE.site).toString();
   return `https://images.weserv.nl/?url=${encodeURIComponent(source)}&w=900&h=506&fit=cover&output=webp&q=78`;
