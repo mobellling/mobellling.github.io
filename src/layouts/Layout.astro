@@ -51,10 +51,75 @@ const { language, textDirection } = I18N;
   </head>
 
   <body class="antialiased text-default bg-page tracking-tight min-h-screen flex flex-col">
+    <div
+      id="initial-page-loader"
+      class="fixed inset-0 z-[9999] grid place-items-center bg-page transition-opacity duration-200"
+      aria-label="页面加载中"
+      role="status"
+    >
+      <div class="flex flex-col items-center gap-3 text-sm text-muted">
+        <span class="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" aria-hidden="true"
+        ></span>
+        <span>正在准备页面…</span>
+      </div>
+    </div>
     <slot />
 
     <Intersect />
     <ServiceWorker />
     <PageViewCounter />
+
+    <script is:inline>
+      // Reveal the page after its HTML/CSS is ready; never wait for images or
+      // unrelated routes, so the loading screen cannot block interaction.
+      const revealInitialPage = () => {
+        const loader = document.getElementById('initial-page-loader');
+        if (!loader) return;
+        loader.classList.add('opacity-0', 'pointer-events-none');
+        window.setTimeout(() => loader.remove(), 220);
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', revealInitialPage, { once: true });
+      } else {
+        revealInitialPage();
+      }
+    </script>
+
+    <script>
+      import { prefetch } from 'astro:prefetch';
+
+      const prefetchOtherPages = () => {
+        const currentPath = window.location.pathname;
+        const urls = new Set(
+          [...document.querySelectorAll<HTMLAnchorElement>('a[href]')]
+            .map((link) => link.href)
+            .filter((url) => {
+              try {
+                const target = new URL(url);
+                return target.origin === window.location.origin && target.pathname !== currentPath;
+              } catch {
+                return false;
+              }
+            })
+        );
+
+        for (const url of urls) prefetch(url, { eagerness: 'conservative' });
+      };
+
+      const schedulePrefetch = () => {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(() => window.setTimeout(prefetchOtherPages, 800), { timeout: 2500 });
+        } else {
+          window.setTimeout(prefetchOtherPages, 1200);
+        }
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', schedulePrefetch, { once: true });
+      } else {
+        schedulePrefetch();
+      }
+    </script>
   </body>
 </html>

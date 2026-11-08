@@ -1,20 +1,8 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
-import { getPermalink, getBlogPermalink, getAsset } from '../utils/permalinks';
+import { getPermalink, getBlogPermalink } from '../utils/permalinks';
 import Hero from '~/components/widgets/Hero.astro';
 import HomeRecent from '~/components/widgets/HomeRecent.astro';
-import Note from '~/components/widgets/Note.astro';
-import Features from '~/components/widgets/Features.astro';
-import QuickStart from '~/components/widgets/QuickStart.astro';
-import Features2 from '~/components/widgets/Features2.astro';
-import Timeline from '~/components/widgets/Timeline.astro';
-import Steps from '~/components/widgets/Steps.astro';
-import Content from '~/components/widgets/Content.astro';
-import BlogHighlightedPosts from '~/components/widgets/BlogHighlightedPosts.astro';
-import FAQs from '~/components/widgets/FAQs.astro';
-import Stats from '~/components/widgets/Stats.astro';
-import CallToAction from '~/components/widgets/CallToAction.astro';
-import SocialProof from '~/components/widgets/SocialProof.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE, METADATA, I18N } from 'astrowind:config';
 import favIconSvg from '~/assets/favicons/favicon.svg';
@@ -49,48 +37,40 @@ const structuredData = [
     ...(METADATA?.twitter?.handle ? { sameAs: [`https://x.com/${METADATA.twitter.handle.replace(/^@/, '')}`] } : {}),
   },
 ];
-
 ---
 
 <Layout metadata={metadata}>
   <StructuredData slot="head" schema={structuredData} />
-  
+
   <!-- Hero Widget ******************* -->
 
   <Hero
     tagline="欢迎！"
     actions={[
       {
-        
         text: '关于',
-        href: getPermalink('/aboutme'), 
+        href: getPermalink('/aboutme'),
       },
       {
         variant: 'primary',
         text: '博客',
-        href: getBlogPermalink(), 
+        href: getBlogPermalink(),
       },
-      { 
-       variant: 'tertiary',
-       text: '动态',
-       href: '/moments/',
-       target: '_blank',
-       },
+      {
+        variant: 'tertiary',
+        text: '动态',
+        href: '/moments/',
+        target: '_blank',
+      },
     ]}
-    
   >
-    
-    <Fragment slot="title">
-      This is a website modified by Mobell.
-    </Fragment>
+    <Fragment slot="title"> This is a website modified by Mobell. </Fragment>
 
     <Fragment slot="subtitle">
-      
       <span class="block mb-1 sm:hidden font-bold text-blue-600">功能仍在改进中~.</span>
       你可以在这里找到blog，之后或许我会添加一点新内容？
     </Fragment>
   </Hero>
 
   <HomeRecent />
-  
 </Layout>

@@ -6,6 +6,7 @@ import { findLatestPosts } from '~/utils/blog';
 import { findImage } from '~/utils/images';
 import { formatMomentDate, getPublishedMoments } from '~/utils/moments';
 import { getAsset, getBlogPermalink, getPermalink } from '~/utils/permalinks';
+import { SITE } from 'astrowind:config';
 
 const [moments, posts] = await Promise.all([getPublishedMoments(), findLatestPosts({ count: 1 })]);
 const moment = moments[0] || null;
@@ -17,6 +18,17 @@ const momentImage = moment?.images?.length
     ? moment.images[0]
     : getAsset(moment.images[0])
   : null;
+
+// 投稿图片来自外部直链，主页卡片统一请求 900px WebP，避免下载原图。
+// 原始地址仍用于详情页和打开大图，不改变内容质量。
+const optimizeRecentImage = (image: string | null): string | null => {
+  if (!image) return null;
+  const source = new URL(image, SITE.site).toString();
+  return `https://images.weserv.nl/?url=${encodeURIComponent(source)}&w=900&h=506&fit=cover&output=webp&q=78`;
+};
+
+const recentMomentImage = optimizeRecentImage(momentImage);
+const recentPostImage = typeof postImage === 'string' ? optimizeRecentImage(postImage) : postImage;
 
 const postDate = post
   ? new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(
@@ -44,14 +56,15 @@ const postDate = post
     >
       <div class="relative aspect-[16/8] overflow-hidden bg-gray-100 dark:bg-slate-800">
         {
-          momentImage ? (
+          recentMomentImage ? (
             <img
-              src={momentImage}
+              src={recentMomentImage}
               alt={moment?.text || '最新动态'}
               width="900"
               height="506"
               class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
             />
           ) : (
@@ -100,9 +113,9 @@ const postDate = post
     >
       <div class="relative aspect-[16/8] overflow-hidden bg-gray-100 dark:bg-slate-800">
         {
-          postImage ? (
+          recentPostImage ? (
             <Image
-              src={postImage}
+              src={recentPostImage}
               alt={post?.title || '最新文章'}
               class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
               widths={[400, 900]}
@@ -111,6 +124,7 @@ const postDate = post
               sizes="(max-width: 768px) 100vw, 50vw"
               format="webp"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
             />
           ) : (

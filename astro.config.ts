@@ -21,7 +21,6 @@ import rehypeImageSize from './src/utils/rehype-image-size';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const hasExternalScripts = false;
@@ -34,7 +33,9 @@ export default defineConfig({
   // Prefetch links as they enter the viewport for snappier navigations
   // (works together with <ClientRouter />, which enables prefetch by default).
   prefetch: {
-    prefetchAll: true,
+    // Do not download every linked page while the homepage is starting up.
+    // Routes are fetched when the visitor actually navigates to them.
+    prefetchAll: false,
     defaultStrategy: 'viewport',
   },
 
@@ -146,7 +147,4 @@ export default defineConfig({
       },
     },
   },
-
-
-  
 });
