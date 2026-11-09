@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   BUILD_PATH: "."
@@ -39,10 +39,12 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       # 安装依赖
       - name: Install dependencies
-        run: npm install --frozen-lockfile
+        run: npm ci
         working-directory: ${{ env.BUILD_PATH }}
 
       # 构建 Astro
