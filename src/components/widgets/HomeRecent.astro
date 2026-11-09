@@ -6,7 +6,6 @@ import { findLatestPosts } from '~/utils/blog';
 import { findImage } from '~/utils/images';
 import { formatMomentDate, getPublishedMoments } from '~/utils/moments';
 import { getAsset, getBlogPermalink, getPermalink } from '~/utils/permalinks';
-import { SITE } from 'astrowind:config';
 
 const [moments, posts] = await Promise.all([getPublishedMoments(), findLatestPosts({ count: 1 })]);
 const moment = moments[0] || null;
@@ -19,13 +18,10 @@ const momentImage = moment?.images?.length
     : getAsset(moment.images[0])
   : null;
 
-// 投稿图片来自外部直链，主页卡片统一请求 900px WebP，避免下载原图。
-// 原始地址仍用于详情页和打开大图，不改变内容质量。
+// 主页卡片沿用原始图片地址，详情页和打开大图的行为保持不变。
 const optimizeRecentImage = (image: string | null): string | null => {
-  return image;
   if (!image) return null;
-  const source = new URL(image, SITE.site).toString();
-  return `https://images.weserv.nl/?url=${encodeURIComponent(source)}&w=900&h=506&fit=cover&output=webp&q=78`;
+  return image;
 };
 
 const recentMomentImage = optimizeRecentImage(momentImage);
@@ -38,131 +34,208 @@ const postDate = post
   : '';
 ---
 
-<WidgetWrapper id="recent" containerClass="max-w-6xl !py-8 md:!py-10 lg:!py-12">
+<WidgetWrapper id="recent" containerClass="max-w-5xl !py-8 md:!py-10 lg:!py-12">
   <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-    <div>
+    <button
+      id="recent-toggle"
+      type="button"
+      class="group text-left"
+      aria-controls="recent-content"
+      aria-expanded="false"
+    >
       <p class="text-sm font-semibold uppercase tracking-wide text-primary">Recent</p>
-      <h2 class="font-heading text-3xl font-bold tracking-tight sm:text-4xl">最近</h2>
-    </div>
-    <div class="flex gap-5 text-sm font-medium">
+      <h2 class="font-heading text-3xl font-bold tracking-tight transition-colors group-hover:text-primary sm:text-4xl">
+        最近
+      </h2>
+    </button>
+    <div id="recent-links" class="flex gap-5 text-sm font-medium" hidden>
       <a class="text-primary hover:underline" href={getPermalink('/moments/')}>全部动态 →</a>
       <a class="text-primary hover:underline" href={getBlogPermalink()}>全部文章 →</a>
     </div>
   </div>
 
-  <div class="grid gap-5 md:grid-cols-2">
-    <a
-      href={moment?.url || getPermalink('/moments/')}
-      class="card-surface interactive-lift group flex flex-col overflow-hidden rounded-2xl"
-    >
-      <div class="relative aspect-[16/8] overflow-hidden bg-gray-100 dark:bg-slate-800">
-        {
-          recentMomentImage ? (
-            <img
-              src={recentMomentImage}
-              alt={moment?.text || '最新动态'}
-              width="900"
-              height="506"
-              class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-              loading="lazy"
-              fetchpriority="low"
-              decoding="async"
-            />
-          ) : (
-            <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
-              <span class="font-heading text-5xl text-primary/30">✦</span>
-            </div>
-          )
-        }
-        <span
-          class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
-        >
-          动态
-        </span>
-      </div>
+  <div id="recent-content" class="recent-content" aria-hidden="true">
+    <div class="grid gap-5 md:grid-cols-2">
+      <a
+        href={moment?.url || getPermalink('/moments/')}
+        class="card-surface interactive-lift group flex flex-col overflow-hidden rounded-2xl"
+      >
+        <div class="relative aspect-[16/8] overflow-hidden bg-gray-100 dark:bg-slate-800">
+          {
+            recentMomentImage ? (
+              <img
+                src={recentMomentImage}
+                alt={moment?.text || '最新动态'}
+                width="900"
+                height="506"
+                class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                loading="lazy"
+                fetchpriority="low"
+                decoding="async"
+              />
+            ) : (
+              <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
+                <span class="font-heading text-5xl text-primary/30">✦</span>
+              </div>
+            )
+          }
+          <span
+            class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
+          >
+            动态
+          </span>
+        </div>
 
-      <div class="flex flex-1 flex-col p-5">
-        {
-          moment ? (
-            <>
-              <time datetime={moment.date.toISOString()} class="text-xs text-muted dark:text-slate-400">
-                {formatMomentDate(moment.date)}
-              </time>
-              <p class="mt-2 line-clamp-3 text-base leading-relaxed text-default dark:text-slate-300">
-                {moment.text || '分享了一张图片。'}
-              </p>
-            </>
-          ) : (
-            <>
-              <p class="text-base font-medium text-default dark:text-slate-200">还没有动态</p>
-              <p class="mt-1 text-sm leading-relaxed text-muted dark:text-slate-400">
-                第一条日常，可能是一张照片，也可能只是一句话。
-              </p>
-            </>
-          )
-        }
-        <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-          {moment ? '查看与留言' : '去动态页看看'}
-          <span aria-hidden="true">→</span>
-        </span>
-      </div>
-    </a>
+        <div class="flex flex-1 flex-col p-5">
+          {
+            moment ? (
+              <>
+                <time datetime={moment.date.toISOString()} class="text-xs text-muted dark:text-slate-400">
+                  {formatMomentDate(moment.date)}
+                </time>
+                <p class="mt-2 line-clamp-3 text-base leading-relaxed text-default dark:text-slate-300">
+                  {moment.text || '分享了一张图片。'}
+                </p>
+              </>
+            ) : (
+              <>
+                <p class="text-base font-medium text-default dark:text-slate-200">还没有动态</p>
+                <p class="mt-1 text-sm leading-relaxed text-muted dark:text-slate-400">
+                  第一条日常，可能是一张照片，也可能只是一句话。
+                </p>
+              </>
+            )
+          }
+          <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+            {moment ? '查看与留言' : '去动态页看看'}
+            <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </a>
 
-    <a
-      href={post ? getPermalink(post.permalink, 'post') : getBlogPermalink()}
-      class="card-surface interactive-lift group flex flex-col overflow-hidden rounded-2xl"
-    >
-      <div class="relative aspect-[16/8] overflow-hidden bg-gray-100 dark:bg-slate-800">
-        {
-          recentPostImage ? (
-            <Image
-              src={recentPostImage}
-              alt={post?.title || '最新文章'}
-              class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-              widths={[400, 900]}
-              width={900}
-              height={506}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              format="webp"
-              loading="lazy"
-              fetchpriority="low"
-              decoding="async"
-            />
-          ) : (
-            <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
-              <span class="font-heading text-5xl text-primary/30">✎</span>
-            </div>
-          )
-        }
-        <span
-          class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
-        >
-          文章
-        </span>
-      </div>
+      <a
+        href={post ? getPermalink(post.permalink, 'post') : getBlogPermalink()}
+        class="card-surface interactive-lift group flex flex-col overflow-hidden rounded-2xl"
+      >
+        <div class="relative aspect-[16/8] overflow-hidden bg-gray-100 dark:bg-slate-800">
+          {
+            recentPostImage ? (
+              <Image
+                src={recentPostImage}
+                alt={post?.title || '最新文章'}
+                class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                widths={[400, 900]}
+                width={900}
+                height={506}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                format="webp"
+                loading="lazy"
+                fetchpriority="low"
+                decoding="async"
+              />
+            ) : (
+              <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
+                <span class="font-heading text-5xl text-primary/30">✎</span>
+              </div>
+            )
+          }
+          <span
+            class="absolute left-4 top-4 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200"
+          >
+            文章
+          </span>
+        </div>
 
-      <div class="flex flex-1 flex-col p-5">
-        {
-          post ? (
-            <>
-              <time datetime={new Date(post.publishDate).toISOString()} class="text-xs text-muted dark:text-slate-400">
-                {postDate}
-              </time>
-              <h3 class="mt-2 font-heading text-xl font-bold leading-snug text-default group-hover:text-primary dark:text-slate-200">
-                {post.title}
-              </h3>
-              {post.excerpt && (
-                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted dark:text-slate-400">{post.excerpt}</p>
-              )}
-            </>
-          ) : (
-            <p class="text-base font-medium text-default dark:text-slate-200">还没有文章</p>
-          )
-        }
-        <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-          阅读全文 <span aria-hidden="true">→</span>
-        </span>
-      </div>
-    </a>
+        <div class="flex flex-1 flex-col p-5">
+          {
+            post ? (
+              <>
+                <time
+                  datetime={new Date(post.publishDate).toISOString()}
+                  class="text-xs text-muted dark:text-slate-400"
+                >
+                  {postDate}
+                </time>
+                <h3 class="mt-2 font-heading text-xl font-bold leading-snug text-default group-hover:text-primary dark:text-slate-200">
+                  {post.title}
+                </h3>
+                {post.excerpt && (
+                  <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted dark:text-slate-400">{post.excerpt}</p>
+                )}
+              </>
+            ) : (
+              <p class="text-base font-medium text-default dark:text-slate-200">还没有文章</p>
+            )
+          }
+          <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+            阅读全文 <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </a>
+    </div>
   </div>
 </WidgetWrapper>
+
+<style>
+  .recent-content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(3rem);
+    transition:
+      max-height 700ms ease,
+      opacity 450ms ease,
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .recent-content.is-open {
+    max-height: 1400px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .recent-content {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const recentSection = document.querySelector('#recent');
+  const recentToggle = document.querySelector('#recent-toggle');
+  const recentContent = document.querySelector('#recent-content');
+  const recentLinks = document.querySelector('#recent-links');
+
+  if (
+    recentSection instanceof HTMLElement &&
+    recentToggle instanceof HTMLButtonElement &&
+    recentContent instanceof HTMLElement
+  ) {
+    let opened = false;
+
+    const openRecent = () => {
+      if (opened) return;
+      opened = true;
+      recentToggle.setAttribute('aria-expanded', 'true');
+      recentContent.setAttribute('aria-hidden', 'false');
+      recentContent.classList.add('is-open');
+      if (recentLinks instanceof HTMLElement) recentLinks.hidden = false;
+    };
+
+    recentToggle.addEventListener('click', openRecent);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          openRecent();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(recentSection);
+  }
+</script>
