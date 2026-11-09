@@ -1,5 +1,6 @@
 ---
 title: 'Privacy Policy'
+description: 'MobellSite 隐私政策页面，说明网站在访问、联系、投稿和相关功能中可能涉及的信息收集、使用、保存与保护方式。'
 layout: '~/layouts/MarkdownLayout.astro'
 ---
 

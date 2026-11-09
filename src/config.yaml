@@ -11,7 +11,7 @@ metadata:
   title:
     default: MobellSite
     template: '%s — MobellSite'
-  description: "这是一个博客网站，由 晓钟Mobell 创建。"
+  description: "MobellSite 是晓钟 Mobell 创建的个人网站，记录网络安全与密码学方向的学习思考、技术实践、生活动态与项目探索，也欢迎读者通过投稿和友链页面参与交流。"
   robots:
     index: true
     follow: true

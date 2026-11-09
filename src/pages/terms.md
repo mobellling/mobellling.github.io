@@ -1,5 +1,6 @@
 ---
 title: 'Terms and Conditions'
+description: 'MobellSite 使用条款页面，说明访问网站、阅读公开内容、提交投稿以及使用站内相关功能时需要了解的规则、责任和限制。'
 layout: '~/layouts/MarkdownLayout.astro'
 ---
 

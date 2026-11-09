@@ -3,9 +3,10 @@ import Layout from '~/layouts/Layout.astro';
 import { getHomePermalink } from '~/utils/permalinks';
 
 const title = `Error 404`;
+const description = '你访问的页面不存在或已经被移动。可以返回 MobellSite 首页，继续浏览博客文章、动态记录、关于介绍和其他公开内容。';
 ---
 
-<Layout metadata={{ title }}>
+<Layout metadata={{ title, description }}>
   <section class="flex items-center h-full p-16">
     <div class="container flex flex-col items-center justify-center px-5 mx-auto my-8">
       <div class="max-w-md text-center">
