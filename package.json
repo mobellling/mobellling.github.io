@@ -39,6 +39,7 @@
     "lodash.merge": "^4.6.2",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
+    "unist-util-visit": "^5.2.0",
     "unpic": "^4.2.2"
   },
   "devDependencies": {
