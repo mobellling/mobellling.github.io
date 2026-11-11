@@ -19,11 +19,10 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-# pnpm-specific files: pnpm is supported for local use (see .pnpmrc), but
-# package-lock.json is the tracked lockfile and npm is what CI, Docker and
-# the deploy targets run. Committing these would let the two trees diverge.
-pnpm-lock.yaml
-pnpm-workspace.yaml
+# pnpm 是 GitHub Actions 云端编译使用的包管理器（见 .github/workflows/），
+# pnpm-lock.yaml / pnpm-workspace.yaml 必须入库，否则 CI 的 --frozen-lockfile
+# 无法工作。Dockerfile 仍用 npm + package-lock.json：改依赖时请两个 lockfile
+# 一起更新（pnpm install / npm install --package-lock-only）。
 
 .astro
 

@@ -3,6 +3,7 @@
   "version": "1.0.0-beta.66",
   "description": "AstroWind: A free template using Astro 7 and Tailwind CSS v4. Astro starter theme.",
   "type": "module",
+  "packageManager": "pnpm@12.15.0",
   "engines": {
     "node": ">=22.22.3"
   },

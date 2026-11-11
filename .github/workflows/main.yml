@@ -29,11 +29,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 安装 Node.js
+      # 安装 pnpm（版本由 package.json 的 packageManager 字段决定）
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      # 安装 Node.js（缓存 pnpm store）
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
 
       # 配置 GitHub Pages
       - name: Setup Pages
@@ -44,12 +52,12 @@ jobs:
 
       # 安装依赖
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: ${{ env.BUILD_PATH }}
 
       # 构建 Astro
       - name: Build with Astro
-        run: npm run build
+        run: pnpm run build
         working-directory: ${{ env.BUILD_PATH }}
 
       # 上传构建产物
