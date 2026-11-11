@@ -24,21 +24,37 @@ const loadLocalImages = () => {
  *   - `ImageMetadata`              → returned as-is (already imported)
  *   - `"http(s)://…"` or `"/path"` → returned as-is (external or public/)
  *   - `"~/assets/images/…"`        → resolved to its ImageMetadata via the glob
+ *
+ * Anything else (e.g. a bare relative path such as `images/blog/x.webp`) is not a
+ * valid image source for `<Image />` / `getImage()`: it used to be passed through
+ * and made the whole build fail with `LocalImageUsedWrongly`. Skip it with a
+ * warning instead, so one typo cannot take the site down.
  */
+const warned = new Set<string>();
+
 export const findImage = async (
   imagePath?: string | ImageMetadata | null
 ): Promise<string | ImageMetadata | undefined | null> => {
   if (typeof imagePath !== 'string') return imagePath;
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('/'))
     return imagePath;
-  if (!imagePath.startsWith('~/assets/images')) return imagePath;
 
   const images = loadLocalImages();
   const key = imagePath.replace('~/', '/src/');
   const loader = images[key];
 
-  if (typeof loader !== 'function') return null;
-  return ((await loader()) as { default: ImageMetadata }).default;
+  if (typeof loader === 'function') {
+    return ((await loader()) as { default: ImageMetadata }).default;
+  }
+
+  if (!warned.has(imagePath)) {
+    warned.add(imagePath);
+    console.warn(
+      `[images] Ignoring unsupported image reference "${imagePath}". ` +
+        `Use an absolute URL (https://…), a public path (/images/…), or "~/assets/images/…".`
+    );
+  }
+  return undefined;
 };
 
 const OG_WIDTH = 1200;
