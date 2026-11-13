@@ -15,6 +15,8 @@ import Analytics from '~/components/common/Analytics.astro';
 import Intersect from '~/components/common/Intersect.astro';
 import ServiceWorker from '~/components/common/ServiceWorker.astro';
 import PageViewCounter from '~/components/common/PageViewCounter.astro';
+// 鼠标挂件（大肥鱼）：想恢复就把下面这行 import 和 body 里的 <CursorFish /> 一起取消注释
+// import CursorFish from '~/components/widgets/CursorFish.astro';
 
 // Comment the line below to disable View Transitions
 import { ClientRouter } from 'astro:transitions';
@@ -56,6 +58,8 @@ const { language, textDirection } = I18N;
     <Intersect />
     <ServiceWorker />
     <PageViewCounter />
+    {/* 鼠标挂件（大肥鱼）已暂时关闭：恢复时把下面这行和顶部的 import 一起取消注释 */}
+    {/* <CursorFish enabled={true} /> */}
 
     <script>
       import { prefetch } from 'astro:prefetch';
