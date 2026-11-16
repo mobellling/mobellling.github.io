@@ -1,7 +1,7 @@
 ---
 publishDate: 2026-11-11T22:00:00Z
 author: Mobell
-title: 高等数学公式(更新到曲率) 
+title: 高等数学公式(更新到不定积分) 
 excerpt: 高数是物理、计算机等学科的共同底座，真正难的不是把公式背下来，而是知道每个公式从哪里来、什么时候能用。这篇文章把高数的核心公式按章节整理成一份随时可查的手册，并对其中较复杂的公式补上了推导过程。
 image: /images/blog/matgongshi.webp
 imageAlt: 高等数学公式文章封面插画
@@ -928,5 +928,85 @@ $$
 **讨论方程根的个数.** 先求导画单调性表，确定每个单调区间端点的函数值符号，用零点定理数出根的个数。形如 $f(x)=0$ 的方程，若 $f'$ 在某区间恒正或恒负，则最多一个根。
 
 **证明存在 $\xi$ 满足某等式.** 把结论里的 $\xi$ 换成 $x$ 写成微分方程形式，凑出辅助函数 $F$ 使 $F'(\xi)=0$，再用罗尔定理。例如证存在 $\xi$ 使 $f'(\xi)+f(\xi)=0$，就取 $F(x)=e^x f(x)$，因为 $F'(x)=e^x\left[f'(x)+f(x)\right]$。
+
+## 4. 不定积分
+
+求导是"已知函数求变化率"，积分是反过来："已知变化率，还原函数"。所以积分的基本功就是**把求导公式倒着背熟**，再学会凑。
+
+### 4.1 原函数与不定积分
+
+若在区间 $I$ 上 $F'(x)=f(x)$，称 $F$ 是 $f$ 在 $I$ 上的一个原函数。若 $F$ 是原函数，则 $F(x)+C$ 全是原函数，且 $f$ 的**任意两个原函数只差一个常数**。
+
+$f$ 的全体原函数称为不定积分，记
+
+$$
+\int f(x)\,dx=F(x)+C
+$$
+
+**证（任意两个原函数只差常数）.** 设 $F'(x)=G'(x)=f(x)$，则 $\left[F(x)-G(x)\right]'=0$，由拉格朗日中值定理的推论，导数恒为零的函数是常数。
+
+**基本性质.**（由求导运算的线性性反推）
+
+$$
+\left(\int f(x)\,dx\right)'=f(x),\qquad \int f'(x)\,dx=f(x)+C
+$$
+
+$$
+\int\left[\alpha f(x)+\beta g(x)\right]dx=\alpha\int f(x)\,dx+\beta\int g(x)\,dx
+$$
+
+**理解.** 不定积分的结果必须带 $+C$，这是最容易丢分的地方；但对定积分和变限积分来说常数会被消掉。
+
+### 4.2 基本积分表
+
+$$
+\int x^{\mu}\,dx=\frac{x^{\mu+1}}{\mu+1}+C\ (\mu\neq -1),\qquad \int\frac{1}{x}\,dx=\ln|x|+C
+$$
+
+$$
+\int a^x\,dx=\frac{a^x}{\ln a}+C,\qquad \int e^x\,dx=e^x+C
+$$
+
+$$
+\int\sin x\,dx=-\cos x+C,\qquad \int\cos x\,dx=\sin x+C
+$$
+
+$$
+\int\sec^2 x\,dx=\tan x+C,\qquad \int\csc^2 x\,dx=-\cot x+C
+$$
+
+$$
+\int\sec x\tan x\,dx=\sec x+C,\qquad \int\csc x\cot x\,dx=-\csc x+C
+$$
+
+$$
+\int\frac{dx}{1+x^2}=\arctan x+C,\qquad \int\frac{dx}{\sqrt{1-x^2}}=\arcsin x+C
+$$
+
+$$
+\int\tan x\,dx=-\ln|\cos x|+C,\qquad \int\cot x\,dx=\ln|\sin x|+C
+$$
+
+$$
+\int\sec x\,dx=\ln|\sec x+\tan x|+C,\qquad \int\csc x\,dx=\ln|\csc x-\cot x|+C
+$$
+
+$$
+\int\frac{dx}{a^2+x^2}=\frac{1}{a}\arctan\frac{x}{a}+C,\qquad \int\frac{dx}{\sqrt{a^2-x^2}}=\arcsin\frac{x}{a}+C\ (a>0)
+$$
+
+$$
+\int\frac{dx}{x^2-a^2}=\frac{1}{2a}\ln\left|\frac{x-a}{x+a}\right|+C,\qquad \int\frac{dx}{\sqrt{x^2\pm a^2}}=\ln\left|x+\sqrt{x^2\pm a^2}\right|+C
+$$
+
+**推导（几个"不显然"的公式怎么来）.** $\int\tan x\,dx=\int\frac{\sin x}{\cos x}dx$，令 $u=\cos x$，$du=-\sin x\,dx$，得 $-\ln|\cos x|+C$。$\int\sec x\,dx$ 是分子分母同乘 $\sec x+\tan x$ 后凑成 $\frac{(\sec x+\tan x)'}{\sec x+\tan x}$。
+
+$$
+\int\frac{dx}{a^2+x^2}\ \ \xrightarrow{x=a\tan t}\ \ \int\frac{a\sec^2 t\,dt}{a^2\sec^2 t}=\frac{1}{a}t+C=\frac{1}{a}\arctan\frac{x}{a}+C
+$$
+
+$$
+\int\frac{dx}{\sqrt{a^2-x^2}}\ \ \xrightarrow{x=a\sin t}\ \ \int\frac{a\cos t\,dt}{a\cos t}=t+C=\arcsin\frac{x}{a}+C
+$$
 
 > 未完待续……（之后继续在这里更新）
