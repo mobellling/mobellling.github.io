@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 /**
- * Generate the service-worker manifest `dist/_hash`.
+ * Generate the site version manifest `dist/_hash`.
  *
  * Format (one file per line, sorted, deterministic):
  *
  *   /index.html 3f2a...
  *   /_astro/Layout.abc123.css 9b7c...
  *
- * The hash is a shortened SHA-256 of the file bytes. The SW only uses it to
- * decide which files changed between deploys; it does not verify contents.
+ * The hash is a shortened SHA-256 of the file bytes. The website no longer
+ * runs a service worker; native app update checkers still consume this file
+ * to detect a new deployment.
  *
  * Run automatically by `npm run build` (postbuild), after `astro build` and
  * `pagefind` have finished. You can also run it standalone:
@@ -36,7 +37,7 @@ const outFile = path.resolve(getArg('--out') ?? path.join(root, '_hash'));
 const hashLength = Number.parseInt(getArg('--hash-length') ?? '16', 10);
 
 if (!Number.isInteger(hashLength) || hashLength < 8 || hashLength > 64) {
-  console.error('[sw] --hash-length must be an integer between 8 and 64');
+  console.error('[hash] --hash-length must be an integer between 8 and 64');
   process.exit(1);
 }
 
@@ -46,8 +47,8 @@ try {
   const rootStat = await stat(root);
   if (!rootStat.isDirectory()) throw new Error(`${root} is not a directory`);
 } catch (error) {
-  console.error(`[sw] build directory not found: ${root}`);
-  console.error(`[sw] ${error instanceof Error ? error.message : String(error)}`);
+  console.error(`[hash] build directory not found: ${root}`);
+  console.error(`[hash] ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 }
 
@@ -110,4 +111,4 @@ const output = `${lines.join('\n')}\n`;
 await writeFile(outFile, output, 'utf8');
 
 const sizeKb = (Buffer.byteLength(output) / 1024).toFixed(1);
-console.log(`[sw] wrote ${path.relative(process.cwd(), outFile)} (${entries.length} files, ${sizeKb} KB)`);
+console.log(`[hash] wrote ${path.relative(process.cwd(), outFile)} (${entries.length} files, ${sizeKb} KB)`);

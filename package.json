@@ -15,7 +15,6 @@
     "hash": "node scripts/gen-hash.mjs",
     "preview": "astro preview",
     "serve:dist": "node scripts/serve-dist.mjs",
-    "test:sw": "node scripts/sw-e2e.mjs",
     "astro": "astro",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",
     "check:astro": "astro check",

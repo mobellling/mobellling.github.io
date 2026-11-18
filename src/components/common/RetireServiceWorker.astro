@@ -1,0 +1,89 @@
+---
+/**
+ * One-time cleanup for the retired service worker.
+ *
+ * The old worker is replaced by a self-destroying `public/sw.js`, but a page
+ * can still be running from its cache on the first visit after deployment.
+ * This script gives new HTML an immediate cleanup path as well: unregister the
+ * old root-scope worker, remove its Cache Storage entries and IndexedDB data.
+ */
+---
+
+<script>
+  const CACHE_PREFIX = 'mobell-sw-';
+  const DB_NAME = 'mobell-sw';
+  const RELOAD_FLAG = 'sw-retired-reloaded';
+
+  type RetireMessage = { type?: string };
+
+  function deleteDatabase(): Promise<void> {
+    return new Promise((resolve) => {
+      if (typeof indexedDB === 'undefined') {
+        resolve();
+        return;
+      }
+
+      let request: IDBOpenDBRequest;
+      try {
+        request = indexedDB.deleteDatabase(DB_NAME);
+      } catch {
+        resolve();
+        return;
+      }
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => resolve();
+      // An old tab may still hold a connection; retry on the next page load
+      // instead of blocking the page.
+      request.onblocked = () => resolve();
+    });
+  }
+
+  async function retire(): Promise<void> {
+    if (!('serviceWorker' in navigator)) return;
+
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(
+      registrations.map(async (registration) => {
+        try {
+          const scope = new URL(registration.scope);
+          if (scope.origin === window.location.origin && scope.pathname === '/') {
+            await registration.unregister();
+          }
+        } catch {
+          // Ignore malformed or already-removed registrations.
+        }
+      })
+    );
+
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter((name) => name.startsWith(CACHE_PREFIX)).map((name) => caches.delete(name)));
+    }
+
+    await deleteDatabase();
+
+    try {
+      window.sessionStorage.removeItem('sw-debug');
+    } catch {
+      // Storage can be unavailable in private mode.
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event: MessageEvent<RetireMessage>) => {
+      if (event.data?.type !== 'SW_RETIRED') return;
+
+      try {
+        if (window.sessionStorage.getItem(RELOAD_FLAG) === '1') return;
+        window.sessionStorage.setItem(RELOAD_FLAG, '1');
+      } catch {
+        // Reload once even if sessionStorage is unavailable.
+      }
+
+      window.location.reload();
+    });
+  }
+
+  void retire().catch((error: unknown) => console.warn('[SW retired] page cleanup failed', error));
+</script>
