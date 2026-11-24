@@ -1155,4 +1155,39 @@ $$
 - 含 $\sin^mx\cos^nx$：$m,n$ 一奇一偶时拆出奇次幂凑 $d\sin x$ 或 $d\cos x$；都偶时降次
 - 含 $\tan x$：令 $u=\tan x$，$dx=\frac{du}{1+u^2}$
 - $\int\frac{dx}{a\sin x+b\cos x}$：辅助角公式化成 $\frac{1}{\sqrt{a^2+b^2}}\int\frac{du}{\sin(x+\varphi)}$，再用 $\int\csc u\,du$
+
+#### 4.6.3 简单无理式
+
+含 $\sqrt[n]{ax+b}$ 时令 $t=\sqrt[n]{ax+b}$，反解 $x$ 化成有理式。含 $\sqrt{\frac{ax+b}{cx+d}}$ 时令 $t$ 等于整个根式。含 $\sqrt{a^2-x^2}$、$\sqrt{a^2+x^2}$、$\sqrt{x^2-a^2}$ 时用三角代换（4.3.2）。
+
+**例.** $\int\frac{dx}{1+\sqrt{x}}$，令 $t=\sqrt{x}$，$x=t^2$，$dx=2t\,dt$：
+
+$$
+\int\frac{2t\,dt}{1+t}=2\int\left(1-\frac{1}{1+t}\right)dt=2\left(t-\ln|1+t|\right)+C=2\sqrt{x}-2\ln\left(1+\sqrt{x}\right)+C
+$$
+
+### 4.7 递推公式
+
+分部积分能把高次幂的积分降到低次幂，得到递推公式。例如
+
+$$
+I_n=\int\sin^n x\,dx=-\frac{1}{n}\sin^{n-1}x\cos x+\frac{n-1}{n}I_{n-2}\ \ (n\ge 2)
+$$
+
+**推导.** $I_n=\int\sin^{n-1}x\cdot\sin x\,dx$，令 $u=\sin^{n-1}x$、$dv=\sin x\,dx$：
+
+$$
+I_n=-\sin^{n-1}x\cos x+(n-1)\int\sin^{n-2}x\cos^2 x\,dx
+$$
+
+再用 $\cos^2x=1-\sin^2x$，得 $I_n=-\sin^{n-1}x\cos x+(n-1)\left(I_{n-2}-I_n\right)$，移项解出 $I_n$。
+
+类似地有
+
+$$
+\int\sec^n x\,dx=\frac{\sec^{n-2}x\tan x}{n-1}+\frac{n-2}{n-1}\int\sec^{n-2}x\,dx
+$$
+
+**理解.** 递推公式的作用是把 $\int\sin^n$、$\int\sec^n$、$\int\frac{dx}{(x^2+a^2)^n}$ 这类降阶，配合定积分还能得到华里士公式（第 5 章）。
+
 > 未完待续……（之后继续在这里更新）

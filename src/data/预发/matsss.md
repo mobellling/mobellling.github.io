@@ -1,41 +1,5 @@
 
 
-
-
-#### 4.6.3 简单无理式
-
-含 $\sqrt[n]{ax+b}$ 时令 $t=\sqrt[n]{ax+b}$，反解 $x$ 化成有理式。含 $\sqrt{\frac{ax+b}{cx+d}}$ 时令 $t$ 等于整个根式。含 $\sqrt{a^2-x^2}$、$\sqrt{a^2+x^2}$、$\sqrt{x^2-a^2}$ 时用三角代换（4.3.2）。
-
-**例.** $\int\frac{dx}{1+\sqrt{x}}$，令 $t=\sqrt{x}$，$x=t^2$，$dx=2t\,dt$：
-
-$$
-\int\frac{2t\,dt}{1+t}=2\int\left(1-\frac{1}{1+t}\right)dt=2\left(t-\ln|1+t|\right)+C=2\sqrt{x}-2\ln\left(1+\sqrt{x}\right)+C
-$$
-
-### 4.7 递推公式
-
-分部积分能把高次幂的积分降到低次幂，得到递推公式。例如
-
-$$
-I_n=\int\sin^n x\,dx=-\frac{1}{n}\sin^{n-1}x\cos x+\frac{n-1}{n}I_{n-2}\ \ (n\ge 2)
-$$
-
-**推导.** $I_n=\int\sin^{n-1}x\cdot\sin x\,dx$，令 $u=\sin^{n-1}x$、$dv=\sin x\,dx$：
-
-$$
-I_n=-\sin^{n-1}x\cos x+(n-1)\int\sin^{n-2}x\cos^2 x\,dx
-$$
-
-再用 $\cos^2x=1-\sin^2x$，得 $I_n=-\sin^{n-1}x\cos x+(n-1)\left(I_{n-2}-I_n\right)$，移项解出 $I_n$。
-
-类似地有
-
-$$
-\int\sec^n x\,dx=\frac{\sec^{n-2}x\tan x}{n-1}+\frac{n-2}{n-1}\int\sec^{n-2}x\,dx
-$$
-
-**理解.** 递推公式的作用是把 $\int\sin^n$、$\int\sec^n$、$\int\frac{dx}{(x^2+a^2)^n}$ 这类降阶，配合定积分还能得到华里士公式（第 5 章）。
-
 ## 5. 定积分
 
 不定积分给的是"一族函数"，定积分给的是"一个数"。把两者连起来的是牛顿-莱布尼茨公式，它让"加无数个小块"变成了"求原函数再代端点"。
