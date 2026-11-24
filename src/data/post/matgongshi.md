@@ -1009,4 +1009,150 @@ $$
 \int\frac{dx}{\sqrt{a^2-x^2}}\ \ \xrightarrow{x=a\sin t}\ \ \int\frac{a\cos t\,dt}{a\cos t}=t+C=\arcsin\frac{x}{a}+C
 $$
 
+### 4.3 换元积分法
+
+#### 4.3.1 第一类换元法（凑微分）
+
+若 $\int f(u)\,du=F(u)+C$，则
+
+$$
+\int f\left[\varphi(x)\right]\varphi'(x)\,dx=\int f(u)\,du\Big|_{u=\varphi(x)}=F\left[\varphi(x)\right]+C
+$$
+
+**推导.** 设 $F'(u)=f(u)$。由链式法则
+
+$$
+\frac{d}{dx}F\left[\varphi(x)\right]=F'\left[\varphi(x)\right]\varphi'(x)=f\left[\varphi(x)\right]\varphi'(x)
+$$
+
+两边积分即得。
+
+**理解.** 就是把 $\varphi'(x)\,dx$ 看成 $d\varphi(x)$，硬凑成 $du$。常见凑法：
+
+$$
+\int f(ax+b)\,dx=\frac{1}{a}\int f(u)\,du,\qquad \int\frac{\varphi'(x)}{\varphi(x)}dx=\ln|\varphi(x)|+C
+$$
+
+$$
+\int f(x^2)x\,dx=\frac{1}{2}\int f(u)\,du,\qquad \int f(e^x)e^x\,dx=\int f(u)\,du
+$$
+
+#### 4.3.2 第二类换元法（换掉 $x$）
+
+设 $x=\psi(t)$ 单调可导且 $\psi'(t)\neq 0$，则
+
+$$
+\int f(x)\,dx=\int f\left[\psi(t)\right]\psi'(t)\,dt\Big|_{t=\psi^{-1}(x)}
+$$
+
+**推导.** 设右端原函数为 $\Phi(t)$，即 $\Phi'(t)=f\left[\psi(t)\right]\psi'(t)$。考虑 $F(x)=\Phi\left[\psi^{-1}(x)\right]$，由链式法则和反函数求导
+
+$$
+F'(x)=\Phi'(t)\cdot\frac{dt}{dx}=f\left[\psi(t)\right]\psi'(t)\cdot\frac{1}{\psi'(t)}=f(x)
+$$
+
+**常用三角代换**（依据 $\sin^2+\cos^2=1$、$1+\tan^2=\sec^2$）：
+
+- 含 $\sqrt{a^2-x^2}$：令 $x=a\sin t$，$|t|\le\frac{\pi}{2}$
+- 含 $\sqrt{a^2+x^2}$：令 $x=a\tan t$，$|t|<\frac{\pi}{2}$
+- 含 $\sqrt{x^2-a^2}$：令 $x=a\sec t$
+
+**例.** $\int\sqrt{a^2-x^2}\,dx$ 令 $x=a\sin t$：
+
+$$
+\int a\cos t\cdot a\cos t\,dt=a^2\int\cos^2 t\,dt=\frac{a^2}{2}\left(t+\frac{\sin 2t}{2}\right)+C=\frac{a^2}{2}\arcsin\frac{x}{a}+\frac{x}{2}\sqrt{a^2-x^2}+C
+$$
+
+这里用了 $\sin 2t=2\sin t\cos t=2\cdot\frac{x}{a}\cdot\frac{\sqrt{a^2-x^2}}{a}$。
+
+**易错点.** 第二类换元最后一定要**换回** $x$；用 $\sqrt{u^2}=|u|$ 时要注意开方出来的符号，例如 $\sqrt{a^2-x^2}=a\cos t$ 需要 $t\in\left[-\frac{\pi}{2},\frac{\pi}{2}\right]$ 才有 $\cos t\ge 0$。
+
+### 4.4 分部积分法
+
+$$
+\int u\,dv=uv-\int v\,du,\qquad\text{即}\qquad \int u(x)v'(x)\,dx=u(x)v(x)-\int u'(x)v(x)\,dx
+$$
+
+**证.** 由乘积法则 $d(uv)=u\,dv+v\,du$，两边积分：
+
+$$
+uv=\int u\,dv+\int v\,du
+$$
+
+移项即得。
+
+**理解（选谁当 $u$）.** 经验口诀"**反对幂指三**"：反三角、对数、幂函数、指数、三角，排在前面的优先当 $u$，因为它求导后会变简单。常见类型：
+
+- $\int x^n e^{ax}dx,\ \int x^n\sin ax\,dx$：$u=x^n$，做 $n$ 次
+- $\int x^n\ln x\,dx,\ \int x^n\arcsin x\,dx$：$u=\ln x$ 或反三角，$dv=x^n dx$
+- $\int e^{ax}\sin bx\,dx$：两次分部后"解方程"回到自身
+
+**例（出现自身时解方程）.**
+
+$$
+I=\int e^{ax}\sin bx\,dx
+$$
+
+两次分部得
+
+$$
+I=\frac{e^{ax}}{a^2+b^2}\left(a\sin bx-b\cos bx\right)+C
+$$
+
+**推导.** 第一次 $u=\sin bx$、$dv=e^{ax}dx$：
+
+$$
+I=\frac{1}{a}e^{ax}\sin bx-\frac{b}{a}\int e^{ax}\cos bx\,dx
+$$
+
+第二次对 $\int e^{ax}\cos bx\,dx$ 分部，得到 $I$ 的表达式，移项解出 $I$ 即可。
+
+### 4.5 有理函数的积分
+
+任何真分式 $\frac{P(x)}{Q(x)}$（分子次数小于分母）都能拆成三类部分分式之和：
+
+$$
+\frac{A}{x-a},\qquad \frac{A}{(x-a)^k},\qquad \frac{Bx+C}{x^2+px+q}\ \ (p^2-4q<0)
+$$
+
+分母先因式分解成一次与二次不可约因式的乘积，再设待定系数、通分比较系数（或代特殊值）求出。
+
+**例（$\int\frac{dx}{x^2-a^2}$ 用部分分式）.**
+
+$$
+\frac{1}{x^2-a^2}=\frac{1}{2a}\left(\frac{1}{x-a}-\frac{1}{x+a}\right)
+$$
+
+所以
+
+$$
+\int\frac{dx}{x^2-a^2}=\frac{1}{2a}\left(\ln|x-a|-\ln|x+a|\right)+C=\frac{1}{2a}\ln\left|\frac{x-a}{x+a}\right|+C
+$$
+
+**例（假分式先除）.** $\frac{x^3}{x^2+1}=x-\frac{x}{x^2+1}$，于是
+
+$$
+\int\frac{x^3}{x^2+1}dx=\frac{x^2}{2}-\frac{1}{2}\ln(x^2+1)+C
+$$
+
+**推导（$\int\frac{Bx+C}{x^2+px+q}dx$ 的通法）.** 先把分子凑成分母导数的一半：设 $u=x^2+px+q$，$u'=2x+p$，把 $Bx+C$ 写成 $\frac{B}{2}(2x+p)+\left(C-\frac{Bp}{2}\right)$。前一项给出 $\frac{B}{2}\ln|u|$；后一项配方 $u=\left(x+\frac{p}{2}\right)^2+\left(q-\frac{p^2}{4}\right)$，用 $\arctan$ 公式。
+
+### 4.6 三角有理式与简单无理式
+
+#### 4.6.1 万能代换
+
+$R(\sin x,\cos x)$ 是有理式时，令 $t=\tan\frac{x}{2}$，则
+
+$$
+\sin x=\frac{2t}{1+t^2},\qquad \cos x=\frac{1-t^2}{1+t^2},\qquad dx=\frac{2\,dt}{1+t^2}
+$$
+
+**推导.** 前两个就是第 1 章的万能公式；$dx$ 由 $x=2\arctan t$ 求导得到。代换后变成 $t$ 的有理式，一定能积出来，但计算量常常很大，优先考虑更简单的凑法。
+
+#### 4.6.2 常用三角有理式技巧
+
+- 含 $\sin^2x,\cos^2x$：用倍角降次 $\sin^2x=\frac{1-\cos 2x}{2}$、$\cos^2x=\frac{1+\cos 2x}{2}$
+- 含 $\sin^mx\cos^nx$：$m,n$ 一奇一偶时拆出奇次幂凑 $d\sin x$ 或 $d\cos x$；都偶时降次
+- 含 $\tan x$：令 $u=\tan x$，$dx=\frac{du}{1+u^2}$
+- $\int\frac{dx}{a\sin x+b\cos x}$：辅助角公式化成 $\frac{1}{\sqrt{a^2+b^2}}\int\frac{du}{\sin(x+\varphi)}$，再用 $\int\csc u\,du$
 > 未完待续……（之后继续在这里更新）
