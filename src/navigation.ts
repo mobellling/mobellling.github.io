@@ -122,6 +122,7 @@ export const footerData = {
         { text: '哔哩哔哩', href: 'https://www.bilibili.com' },
         { text: 'Github', href: getPermalink('https://github.com') },
         { text: 'Calculus Made Easy', href: getPermalink('https://master-g.github.io/calculus-made-easy-zh/') },
+        { text: '遗忘的关系，如残月般', herf: 'https://mobellling.github.io/classroom/'}
       ],
     },
     // {
@@ -143,7 +144,7 @@ export const footerData = {
         { text: 'webp裁切', href: 'https://imageresizer.com/zh/%E8%A3%81%E5%89%AA-webp' },
         { text: '文本加空行', href: 'https://uutool.cn/list-new-line' },
         { text: 'DeepSeek API文档', herf: 'https://api-docs.deepseek.com/zh-cn/' },
-        { text: '遗忘的关系，如残月般', herf: 'https://mobellling.github.io/classroom/'}
+        
       ],
     },
     {
