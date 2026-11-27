@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>遗忘的关系，如残月般 · 文本可视化</title>
+<style>
+  :root{
+    --paper:#f6f3ec;
+    --card:#fffefb;
+    --ink:#1f1c18;
+    --ink2:#4a443c;
+    --muted:#7b7367;
+    --line:#e4ddd1;
+    --line2:#efe9dd;
+    --red:#a8322d;
+    --red-soft:#c4635c;
+    --green:#5f7259;
+    --gold:#a98546;
+    --radius:10px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{
+    font-family:"Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC",SimSun,serif;
+  }
+  .page{max-width:var(--maxw);margin:0 auto;padding:0 24px 96px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    padding:72px 0 40px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;right:-60px;top:-40px;
+    width:340px;height:340px;border-radius:50%;
+    background:radial-gradient(circle at 60% 40%, rgba(168,50,45,.10), rgba(168,50,45,0) 62%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:12px;letter-spacing:.22em;color:var(--red);
+    text-transform:uppercase;margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--red);opacity:.55;}
+  h1{
+    font-size:clamp(30px,5.4vw,52px);
+    line-height:1.28;margin:0 0 18px;font-weight:600;letter-spacing:.02em;
+  }
+  .hero-sub{
+    color:var(--ink2);max-width:640px;margin:0;
+    font-size:15px;
+  }
+  .hero-meta{
+    display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:28px;
+    font-size:12.5px;color:var(--muted);letter-spacing:.04em;
+  }
+  .hero-meta span b{color:var(--ink);font-weight:600;font-size:13.5px;}
+
+  /* ---------- TOC ---------- */
+  .toc{
+    display:flex;flex-wrap:wrap;gap:8px;
+    padding:18px 0;border-bottom:1px solid var(--line2);
+    position:sticky;top:0;z-index:30;
+    background:rgba(246,243,236,.94);
+    backdrop-filter:blur(6px);
+  }
+  .toc a{
+    font-size:12.5px;color:var(--ink2);text-decoration:none;
+    padding:5px 11px;border:1px solid var(--line);border-radius:99px;
+    background:var(--card);transition:.18s;white-space:nowrap;
+  }
+  .toc a:hover{border-color:var(--red);color:var(--red);}
+
+  /* ---------- Sections ---------- */
+  section{padding-top:64px;}
+  .sec-head{margin-bottom:26px;}
+  .sec-no{
+    font-size:11.5px;letter-spacing:.2em;color:var(--muted);
+    display:block;margin-bottom:8px;
+  }
+  h2{
+    font-size:clamp(20px,2.6vw,26px);font-weight:600;margin:0 0 10px;
+    letter-spacing:.01em;
+  }
+  .sec-desc{margin:0;color:var(--ink2);font-size:14px;max-width:760px;}
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px 24px;
+  }
+  .note{
+    font-size:12.5px;color:var(--muted);line-height:1.7;margin:16px 0 0;
+  }
+  .note b{color:var(--ink2);font-weight:600;}
+
+  /* ---------- About grid ---------- */
+  .about{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;
+  }
+  .about > div{background:var(--card);padding:24px 22px;}
+  .about h3{
+    font-size:13px;margin:0 0 10px;color:var(--red);font-weight:600;letter-spacing:.08em;
+  }
+  .about p{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.85;}
+
+  /* ---------- KPI ---------- */
+  .kpis{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:26px;
+  }
+  .kpi{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 16px 16px;
+  }
+  .kpi .v{
+    font-family:"Songti SC","STSong","Source Han Serif SC",SimSun,serif;
+    font-size:clamp(22px,3.2vw,30px);line-height:1.1;font-weight:600;
+    letter-spacing:.01em;
+  }
+  .kpi .v small{font-size:12px;font-weight:400;color:var(--muted);margin-left:3px;letter-spacing:0;}
+  .kpi .k{font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:.04em;}
+  .kpi.accent .v{color:var(--red);}
+
+  /* ---------- Legend ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:6px 20px;margin-bottom:20px;font-size:12.5px;color:var(--ink2);}
+  .legend i{
+    display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;
+    vertical-align:baseline;
+  }
+
+  /* ---------- Bar chart (horizontal) ---------- */
+  .bars{display:flex;flex-direction:column;gap:5px;}
+  .row{
+    display:grid;grid-template-columns:196px 1fr 62px;align-items:center;gap:12px;
+    padding:2px 0;border-radius:4px;cursor:default;
+    transition:background .16s;
+  }
+  .row:hover,.row:focus-visible{background:#faf6ec;outline:none;}
+  .row-label{
+    font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;letter-spacing:.01em;
+  }
+  .row-label em{font-style:normal;color:var(--muted);font-size:11.5px;margin-right:6px;}
+  .track{height:16px;background:#f2ede2;border-radius:3px;overflow:hidden;position:relative;}
+  .bar{
+    height:100%;width:0;border-radius:3px;
+    transition:width .85s cubic-bezier(.22,.7,.3,1);
+  }
+  .row:hover .bar{filter:brightness(1.12);}
+  .row-val{
+    font-size:12px;color:var(--ink2);text-align:right;
+    font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  }
+  /* 坐标轴 */
+  .axis{
+    display:grid;grid-template-columns:196px 1fr 62px;gap:12px;align-items:start;
+    margin-top:10px;padding-top:8px;border-top:1px solid var(--line);
+    font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;
+  }
+  .axis .ticks{
+    grid-column:2;display:flex;justify-content:space-between;
+    position:relative;top:0;
+  }
+  .axis .ticks span{transform:translateX(-50%);}
+  .axis .ticks span:first-child{transform:none;}
+  .axis .ticks span:last-child{transform:translateX(-100%);}
+  .axis .unit{grid-column:3;text-align:right;letter-spacing:.04em;}
+
+  /* ---------- Heatmap ---------- */
+  .heat-wrap{display:flex;align-items:flex-start;}
+  .heat-labels{
+    flex:0 0 100px;display:flex;flex-direction:column;gap:2px;
+    padding-top:24px;
+  }
+  .heat-scroll{overflow-x:auto;flex:1 1 auto;padding-bottom:6px;}
+  .heat-grid{
+    display:grid;gap:2px;
+    grid-template-columns:repeat(33,minmax(17px,1fr));
+    min-width:590px;
+  }
+  .heat-col{
+    font-size:9px;color:var(--muted);text-align:center;
+    height:22px;line-height:15px;padding-bottom:7px;box-sizing:border-box;
+    font-variant-numeric:tabular-nums;
+  }
+  .heat-name{
+    font-size:12px;color:var(--ink2);display:flex;align-items:center;
+    height:22px;white-space:nowrap;
+  }
+  .cell{
+    height:22px;border-radius:2px;background:#f4efe4;
+    transition:transform .12s,box-shadow .12s;
+  }
+  .cell:hover{
+    transform:scale(1.35);box-shadow:0 2px 8px rgba(31,28,24,.22);
+    position:relative;z-index:5;
+  }
+  .heat-scale{
+    display:flex;align-items:center;gap:8px;margin-top:16px;
+    font-size:11.5px;color:var(--muted);
+  }
+  .heat-scale .sw{display:flex;height:9px;border-radius:2px;overflow:hidden;width:150px;}
+  .heat-scale .sw i{flex:1;}
+  .scroll-hint{display:none;font-size:11.5px;color:var(--muted);margin:10px 0 0;text-align:center;letter-spacing:.08em;}
+
+  /* ---------- Timeline ---------- */
+  .tl{position:relative;padding-left:0;}
+  .tl-item{
+    display:grid;grid-template-columns:104px 1fr;gap:22px;
+    padding:0 0 26px;position:relative;
+  }
+  .tl-item::before{
+    content:"";position:absolute;left:125.5px;top:16px;bottom:-16px;width:1px;
+    background:#e0d7c7;
+  }
+  .tl-item:last-child::before{display:none;}
+  .tl-year{
+    font-family:"Songti SC","STSong",SimSun,serif;
+    font-size:17px;color:var(--ink);padding-top:2px;
+    font-variant-numeric:tabular-nums;letter-spacing:.02em;
+    display:flex;flex-direction:column;align-items:flex-end;
+  }
+  .tl-year small{display:block;font-size:11px;color:var(--muted);font-family:inherit;letter-spacing:.06em;}
+  .tl-body{position:relative;padding-left:20px;}
+  .tl-body::before{
+    content:"";position:absolute;left:-5px;top:10px;width:9px;height:9px;
+    border-radius:50%;background:var(--paper);border:1.5px solid var(--red);
+  }
+  .tl-item.quiet .tl-body::before{border-color:var(--muted);}
+  .tl-item.key .tl-body::before{background:var(--red);border-color:var(--red);}
+  .tl-body h4{margin:0 0 4px;font-size:14px;font-weight:600;}
+  .tl-body p{margin:0;font-size:13.5px;color:var(--ink2);}
+  .tl-body .q{
+    display:block;margin-top:6px;font-size:12.5px;color:var(--muted);
+    border-left:2px solid var(--line);padding-left:10px;font-family:"Songti SC",SimSun,serif;
+  }
+
+  /* ---------- Count ladder ---------- */
+  .ladder-scroll{overflow-x:auto;padding-bottom:10px;}
+  .ladder{
+    display:flex;align-items:flex-end;gap:12px;min-width:720px;
+    padding:18px 4px 0;
+  }  .step{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;}
+  .step .num{
+    font-family:"Songti SC","STSong",SimSun,serif;font-size:19px;font-weight:600;
+    margin-bottom:6px;font-variant-numeric:tabular-nums;
+  }
+  .step .col{
+    width:100%;border-radius:3px 3px 0 0;
+    background:linear-gradient(180deg,#c4635c,#a8322d);
+    transition:height .9s cubic-bezier(.22,.7,.3,1);height:0;
+  }
+  .step.soft .col{background:linear-gradient(180deg,#d9cbb6,#bfae95);}
+  .step .cap{
+    font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;line-height:1.55;
+    min-height:44px;
+  }
+  .step .cap b{display:block;color:var(--ink2);font-weight:600;font-size:12px;}
+  /* 移动端：改为横向条形列表 */
+  .ladder-list{display:none;}
+  .lrow{margin-bottom:13px;}
+  .lhead{display:flex;align-items:baseline;gap:8px;}
+  .lhead b{
+    font-family:"Songti SC","STSong",SimSun,serif;font-size:19px;
+    width:34px;flex:0 0 34px;font-variant-numeric:tabular-nums;
+  }
+  .lhead span{font-size:12.5px;color:var(--ink2);font-weight:600;}
+  .lhead em{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:auto;text-align:right;}
+  .ltrack{height:11px;background:#f2ede2;border-radius:3px;margin-top:5px;overflow:hidden;}
+  .ltrack i{
+    display:block;height:100%;border-radius:3px;width:0;
+    background:linear-gradient(90deg,#c4635c,#a8322d);
+    transition:width .8s cubic-bezier(.22,.7,.3,1);
+  }
+  .lrow.soft .ltrack i{background:linear-gradient(90deg,#dbcfbb,#bfae95);}
+  .quotes{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:30px;
+  }
+  .quotes > div{background:var(--card);padding:20px;}
+  .quotes h4{
+    margin:0 0 10px;font-size:12.5px;color:var(--red);letter-spacing:.06em;font-weight:600;
+  }
+  .quotes p{margin:0;font-size:13px;color:var(--ink2);line-height:1.8;}
+  .quotes q{
+    display:block;margin-top:10px;font-family:"Songti SC",SimSun,serif;
+    color:var(--ink);font-size:13px;quotes:"「" "」";
+  }
+  .quotes .sum{
+    margin-top:10px;font-size:12px;color:var(--muted);letter-spacing:.02em;
+  }
+
+  /* ---------- Roster ---------- */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    margin-bottom:16px;justify-content:space-between;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-size:12.5px;padding:6px 13px;border-radius:99px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card);color:var(--ink2);
+    transition:.16s;font-family:inherit;
+  }
+  .chip:hover{border-color:var(--red);color:var(--red);}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fdfbf6;}
+  .search{
+    font-family:inherit;font-size:13px;padding:7px 12px;border-radius:8px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    outline:none;min-width:180px;
+  }
+  .search:focus{border-color:var(--red);}
+  .roster{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);}
+  .r-head,.r-row{
+    display:grid;grid-template-columns:44px 108px 52px 62px 88px 1fr;
+    gap:10px;align-items:center;padding:10px 16px;
+  }
+  .r-head{
+    background:#f7f2e7;font-size:11.5px;color:var(--muted);
+    letter-spacing:.08em;border-bottom:1px solid var(--line);
+  }
+  .r-row{border-bottom:1px solid var(--line2);font-size:13px;}
+  .r-row:last-child{border-bottom:none;}
+  .r-row:hover{background:#faf6ec;}
+  .r-idx{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .r-name{font-weight:600;font-size:13.5px;}
+  .r-dim{color:var(--ink2);font-size:12.5px;}
+  .r-note{color:var(--muted);font-size:12.5px;line-height:1.6;}
+  .tag{
+    display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;
+    letter-spacing:.04em;white-space:nowrap;
+  }
+  .tag.alive{background:#eef1e9;color:#4f6149;border:1px solid #dfe5d7;}
+  .tag.same{background:#fbeeec;color:#9c2f2a;border:1px solid #f0d8d5;}
+  .tag.date{background:#f8f1e0;color:#8d6c33;border:1px solid #ecdfc4;}
+  .empty{padding:28px;text-align:center;color:var(--muted);font-size:13px;}
+
+  /* ---------- Tooltip ---------- */
+  .tip{
+    position:fixed;z-index:99;pointer-events:none;opacity:0;
+    transform:translate(-50%,-118%);
+    background:#241f1a;color:#f7f3ea;font-size:12px;line-height:1.6;
+    padding:8px 11px;border-radius:7px;max-width:260px;
+    box-shadow:0 6px 22px rgba(31,28,24,.24);
+    transition:opacity .14s;
+  }
+  .tip.on{opacity:1;}
+  .tip b{color:#fff;font-weight:600;}
+  .tip .k{color:#c9bfae;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:80px;padding-top:28px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);line-height:1.9;
+  }
+  footer b{color:var(--ink2);font-weight:600;}
+  footer code{
+    font-size:12px;background:#efe9dc;padding:1px 5px;border-radius:3px;
+    color:var(--ink2);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:760px){
+    .ladder-scroll{display:none;}
+    .ladder-list{display:block;}
+  }
+  @media (max-width:900px){
+    .kpis{grid-template-columns:repeat(3,1fr);}
+    .about{grid-template-columns:1fr;}
+    .quotes{grid-template-columns:1fr;}
+  }
+  @media (max-width:680px){
+    .page{padding:0 16px 72px;}
+    .hero{padding:48px 0 30px;}
+    section{padding-top:48px;}
+    .card{padding:20px 16px;}
+    .kpis{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .row{grid-template-columns:118px 1fr 46px;gap:8px;}
+    .axis{grid-template-columns:118px 1fr 46px;gap:8px;font-size:10px;}
+    .row-label{font-size:11.5px;}
+    .row-val{font-size:11px;}
+    .track{height:14px;}
+    .heat-labels{flex:0 0 62px;}
+    .heat-name{font-size:11.5px;}
+    .heat-grid{min-width:560px;grid-template-columns:repeat(33,minmax(16px,1fr));}
+    .scroll-hint{display:block;}
+    .toc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+    .toc::-webkit-scrollbar{display:none;}
+    .toc a{flex:0 0 auto;}
+    .tl-item{grid-template-columns:74px 1fr;gap:12px;}
+    .tl-item::before{left:85.5px;}
+    .tl-year{font-size:15px;}
+    .r-head{display:none;}
+    .r-row{
+      display:flex;flex-wrap:wrap;align-items:baseline;
+      gap:5px 12px;padding:12px 14px;
+    }
+    .r-idx{display:none;}
+    .r-name{font-size:14px;flex:1 1 auto;}
+    .r-dim{font-size:12px;}
+    .r-note{flex:1 1 100%;font-size:12px;margin-top:2px;}
+    .r-row .tag{margin-left:auto;}
+    .search{min-width:0;width:100%;}
+    .toolbar{gap:10px;}
+    .chips{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="eyebrow">文本可视化 · 一份小说档案</div>
+    <h1 class="serif">遗忘的关系，如残月般</h1>
+    <p class="hero-sub">把一部约七万四千字的小说，拆成可以核对的结构：它有多长、谁在说话、时间走了多远，以及一个班的名册怎样一次次地少下去。</p>
+    <div class="hero-meta">
+      <span><b>33</b> 个二级章节</span>
+      <span><b>74,050</b> 汉字</span>
+      <span><b>31</b> 个名字</span>
+      <span><b>1985—2031</b> 年跨度</span>
+      <span>原文未作任何改动</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#about">可视化说明</a>
+    <a href="#chapters">章节体量</a>
+    <a href="#people">人物出场</a>
+    <a href="#matrix">出场分布</a>
+    <a href="#timeline">时间线</a>
+    <a href="#count">点名与人数</a>
+    <a href="#roster">班级名册</a>
+  </nav>
+
+  <!-- ============ 说明 ============ -->
+  <section id="about">
+    <div class="sec-head">
+      <span class="sec-no">00 / 可视化对象与目标</span>
+      <h2>先说明这张页面在量什么</h2>
+      <p class="sec-desc">小说不是数据表，但它的长度、名字与日期是可以被精确计数的。以下四类指标都直接从原文计算得出，不引入外部信息，也不对情节作评价。</p>
+    </div>
+    <div class="about">
+      <div>
+        <h3>对象</h3>
+        <p>源文件《余兴节目（合并版）.md》，12,397 行、295,168 字节。含正文十九节（引子与十八章）、插曲与附录七节、旁支七节，以及一部「高三七班名册」。</p>
+      </div>
+      <div>
+        <h3>目标</h3>
+        <p>呈现四个问题：章节体量如何分布；人物在何处密集出现；故事的时间跨度与关键节点；「点名」这一核心意象中，人数怎样逐次减少。</p>
+      </div>
+      <div>
+        <h3>口径</h3>
+        <p>汉字数以 Unicode 汉字区间（U+4E00–U+9FFF）逐字统计，不含标点与 Markdown 标记；人名按全文精确匹配计数；名册 31 条逐条解析。</p>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="v" data-count="74050">0</div>
+        <div class="k">全文汉字数</div>
+      </div>
+      <div class="kpi">
+        <div class="v" data-count="33">0</div>
+        <div class="k">二级章节</div>
+      </div>
+      <div class="kpi accent">
+        <div class="v" data-count="31">0</div>
+        <div class="k">名册在册人数</div>
+      </div>
+      <div class="kpi">
+        <div class="v" data-count="219">0</div>
+        <div class="k">开篇高考倒计时<small>天</small></div>
+      </div>
+      <div class="kpi">
+        <div class="v" data-count="46">0</div>
+        <div class="k">时间跨度<small>年</small></div>
+      </div>
+    </div>
+    <p class="note">说明：时间跨度按文中出现的最早纪年（一九八五年）至最晚纪年（二〇三一年）计，共 46 年。</p>
+  </section>
+
+  <!-- ============ 章节体量 ============ -->
+  <section id="chapters">
+    <div class="sec-head">
+      <span class="sec-no">01 / 章节体量</span>
+      <h2>全书三十三节，长短相差近九倍</h2>
+      <p class="sec-desc">按原文顺序排列，条形长度即该节汉字数。最长的是第三章〈第一课：听写〉，5,800 字；最短的是「再后来……」，647 字。悬停任意一条可看具体字数与占比。</p>
+    </div>
+    <div class="card">
+      <div class="legend">
+        <span><i style="background:#2f2b26"></i>正文（引子与十八章）</span>
+        <span><i style="background:#a8322d"></i>插曲与附录</span>
+        <span><i style="background:#b3a894"></i>旁支（「其他的事情」）</span>
+      </div>
+      <div class="bars" id="chapterBars"></div>
+      <p class="note"><b>读法：</b>章节长度并不均匀。最长的四节依次是第三章〈第一课：听写〉5,800 字、第一章〈落子〉4,935 字、第五章〈自习〉4,560 字、第八章〈家长会〉4,167 字，都落在事故当夜及其后的追述里；进入第十七、十八章后长度回落到 2,300 字左右，收束明显加快。插曲与旁支普遍短于正文，承担补叙功能。</p>
+    </div>
+  </section>
+
+  <!-- ============ 人物出场 ============ -->
+  <section id="people">
+    <div class="sec-head">
+      <span class="sec-no">02 / 人物出场</span>
+      <h2>成汐一人，占去全部人名提及的半数以上</h2>
+      <p class="sec-desc">统计范围为正文（不含「其他的事情」与名册）。条形颜色取自名册中的标记：绿为「活着」，红为「同日」，金为记有具体日期者。</p>
+    </div>
+    <div class="card">
+      <div class="legend">
+        <span><i style="background:#5f7259"></i>名册标记「活着」</span>
+        <span><i style="background:#a8322d"></i>名册标记「同日」</span>
+        <span><i style="background:#a98546"></i>名册记具体日期</span>
+      </div>
+      <div class="bars" id="peopleBars"></div>
+      <p class="note"><b>读法：</b>成汐 509 次，是第二名姜和（124 次）的四倍多，全书视角基本锁定在她身上。值得注意的是张岚：出场 118 次，排第三，其中 61 次集中在第十五章〈张岚〉一节——一个「死了两年，没人发现」的人，要靠一整章的篇幅才被看见。</p>
+    </div>
+  </section>
+
+  <!-- ============ 热力图 ============ -->
+  <section id="matrix">
+    <div class="sec-head">
+      <span class="sec-no">03 / 出场分布</span>
+      <h2>谁在哪一节出现</h2>
+      <p class="sec-desc">十二位主要人物 × 三十三个章节。颜色越深，该人物在该节的提及次数越多。手机上可左右滑动查看完整矩阵，悬停或点按格子读取数值。</p>
+    </div>
+    <div class="card">
+      <div class="heat-wrap">
+        <div class="heat-labels" id="heatLabels"></div>
+        <div class="heat-scroll">
+          <div class="heat-grid" id="heatGrid"></div>
+        </div>
+      </div>
+      <p class="scroll-hint">← 左右滑动查看全部 33 节 →</p>
+      <div class="heat-scale">
+        <span>0</span>
+        <span class="sw" id="heatScale"></span>
+        <span>60 次以上</span>
+      </div>
+      <p class="note"><b>读法：</b>横向看是章节的人物密度，纵向看是人物的活跃区间。几条明显的亮带：成汐几乎每节都在；于韵与何雨在第三章同时出现高点（10 次与 29 次），赵克则在第八章升到 24 次，正好是人群聚集、逐一被点到的段落；卢依田的 16 次集中在以她命名的那一节，此外只在第三章有 14 次。</p>
+    </div>
+  </section>
+
+  <!-- ============ 时间线 ============ -->
+  <section id="timeline">
+    <div class="sec-head">
+      <span class="sec-no">04 / 时间线</span>
+      <h2>从一九八五年的那口井，到二〇三一年</h2>
+      <p class="sec-desc">以下节点均取自原文明确写出的年份或日期，按时间顺序排列。红色实心点为主要转折，空心点为过程性事件。</p>
+    </div>
+    <div class="card">
+      <div class="tl" id="timelineList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 点名 ============ -->
+  <section id="count">
+    <div class="sec-head">
+      <span class="sec-no">05 / 点名与人数</span>
+      <h2>三十一，减一，再减一</h2>
+      <p class="sec-desc">「点名」是全书最反复的动作。广播报出的数字、屏幕显示的数字、叙述者自己数出来的数字，从来不一致。下图按文中出现顺序记录人数变化。</p>
+    </div>
+    <div class="card">
+      <div class="ladder-scroll">
+        <div class="ladder" id="ladder"></div>
+      </div>
+      <div class="ladder-list" id="ladderList"></div>
+      <p class="note"><b>读法：</b>纵轴为人数（单位：人）。从开篇的 31 人，到广播的「应到三十、实到二十九」，到屏幕上的「二十八人」，再到〈点卯〉一章的连减，最后停在「教室里剩下十一个人」。每一级都对应一句原文，数字本身即是叙事的推进方式。</p>
+    </div>
+
+    <div class="quotes">
+      <div>
+        <h4>口径一 · 附录自述</h4>
+        <p>名册末尾的统计，以「卒／存」二分。</p>
+        <q>以上三十一人。三十一人中，十一人卒，二十人存。</q>
+        <div class="sum">11 + 20 = 31</div>
+      </div>
+      <div>
+        <h4>口径二 · 名册逐条标记</h4>
+        <p>三十一条记录中，实际写有「活着」的只有九条，写「同日」的二十一条，另有一条记具体日期。</p>
+        <q>同日。</q>
+        <div class="sum">9 + 21 + 1 = 31</div>
+      </div>
+      <div>
+        <h4>口径三 · 点名声数</h4>
+        <p>广播与后记中的应到、实到，以及「它」数不到的那一个。</p>
+        <q>它点数的时候，只点得到二十九个。它从来数不到张岚。</q>
+        <div class="sum">应到 31 · 实到 30 · 缺勤 1 · 数得到 29</div>
+      </div>
+    </div>
+    <p class="note"><b>需要说明的不一致：</b>三种口径无法互相校验：附录说「十一人卒」，名册标记里却有二十二条不是「活着」，而点名的记录里缺勤者只有一人。本页不作合并、不作推断，只把原文的说法并列呈现——因为这种数不清本身就是文本的写法：名册后记写着「应到三十一人，实到三十人，缺勤一人」，而缺勤者是肖中，最后一句是「——他后来到了」。</p>
+  </section>
+
+  <!-- ============ 名册 ============ -->
+  <section id="roster">
+    <div class="sec-head">
+      <span class="sec-no">06 / 班级名册</span>
+      <h2>高三七班，三十一人</h2>
+      <p class="sec-desc">名册逐条录自原文附录（陈丹丹抄自肖中的备忘录）。可按键筛选、按姓名搜索。备注一栏保留原文措辞，未作删改。</p>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="chips">
+        <button class="chip on" data-f="all">全部 31</button>
+        <button class="chip" data-f="alive">活着 9</button>
+        <button class="chip" data-f="same">同日 21</button>
+        <button class="chip" data-f="date">记日期 1</button>
+      </div>
+      <input class="search" id="search" type="search" placeholder="搜索姓名或备注…" aria-label="搜索名册">
+    </div>
+    <div class="roster">
+      <div class="r-head">
+        <span>序</span><span>姓名</span><span>性别</span><span>年龄</span><span>名册标记</span><span>原文备注</span>
+      </div>
+      <div id="rosterBody"></div>
+    </div>
+    <p class="note"><b>统计：</b>男 16 人、女 15 人；十七岁 24 人、十八岁 7 人。名册中性别与年龄按原文写法录入（原文作「女，十七。」，即十七岁）。</p>
+  </section>
+
+  <footer>
+    <p><b>数据来源：</b>《余兴节目（合并版）.md》，本地文件，12,397 行 / 295,168 字节。本页全部数值由该文件直接计算，未接入任何外部数据。</p>
+    <p><b>统计方法：</b>汉字数 = Unicode 汉字区间（U+4E00–U+9FFF）内的字符数，按二级标题 <code>##</code> 切分章节后逐节统计；人物次数 = 姓名子串在正文（前 11,137 行）中的精确匹配次数，「泽研」同时覆盖「周韩泽研」；名册 = 逐条解析 31 条记录中的性别、年龄与标记词。</p>
+    <p><b>图表含义：</b>横向条形图表示绝对数量（汉字数、提及次数）；热力图用颜色深浅表示交叉频次，用于观察人物在章节间的分布；阶梯图表示人数随情节推进的递减；时间线仅收录原文明确写出的年份。</p>
+    <p><b>关于原文：</b>本页只做统计与引用，原文一字未改。引号内文字均为原文原句，仅用于标注数据出处。</p>
+  </footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   数据区（全部由原文计算得出）
+   ========================================================= */
+const SECTIONS = [
+  {"t":"引子 · 十月的最后一个星期五","c":3043,"g":"main","m":[17,13,2,4,4,8,1,3,0,11,3,0]},
+  {"t":"第一章 · 落子","c":4935,"g":"main","m":[42,35,0,8,2,23,3,2,1,0,0,1]},
+  {"t":"第二章 · 门外","c":3123,"g":"main","m":[1,0,0,1,1,1,3,0,0,9,0,4]},
+  {"t":"第三章 · 第一课：听写","c":5800,"g":"main","m":[56,8,10,29,0,9,3,0,19,2,3,14]},
+  {"t":"第四章 · 门外（二）","c":2444,"g":"main","m":[1,1,2,0,2,0,1,0,0,7,0,0]},
+  {"t":"插曲 · 于韵","c":1511,"g":"inter","m":[1,8,16,0,0,1,0,0,0,0,1,0]},
+  {"t":"第五章 · 自习","c":4560,"g":"main","m":[48,6,13,1,1,1,4,3,0,1,24,2]},
+  {"t":"第六章 · 评优","c":4078,"g":"main","m":[41,11,6,33,2,8,2,3,8,0,8,3]},
+  {"t":"插曲 · 何雨","c":1627,"g":"inter","m":[18,0,0,17,0,0,0,0,0,2,0,0]},
+  {"t":"第七章 · 接线","c":3898,"g":"main","m":[33,0,1,0,0,1,3,5,6,0,5,8]},
+  {"t":"第八章 · 家长会","c":4167,"g":"main","m":[45,1,0,2,0,24,3,23,10,4,0,2]},
+  {"t":"第九章 · 课间","c":3599,"g":"main","m":[51,5,1,1,24,1,9,0,4,0,1,0]},
+  {"t":"第十章 · 说","c":1158,"g":"main","m":[28,3,2,0,5,0,0,0,3,0,0,1]},
+  {"t":"第十一章 · 账本","c":1696,"g":"main","m":[12,5,2,2,0,9,1,3,17,2,0,0]},
+  {"t":"第十二章 · 名单（徐老师视角）","c":1995,"g":"main","m":[4,3,3,0,9,0,2,0,1,4,0,0]},
+  {"t":"插曲 · 二〇一四","c":2682,"g":"inter","m":[0,0,0,0,0,0,0,0,0,1,0,0]},
+  {"t":"第十三章 · 点卯","c":2549,"g":"main","m":[23,4,4,6,1,5,3,11,6,0,11,3]},
+  {"t":"插曲 · 肖中","c":1488,"g":"inter","m":[12,0,0,0,1,1,0,0,0,0,0,0]},
+  {"t":"第十四章 · 后院","c":1217,"g":"main","m":[0,0,0,0,3,0,0,0,0,2,0,0]},
+  {"t":"第十五章 · 张岚","c":2298,"g":"main","m":[36,0,0,0,0,0,0,61,0,1,0,0]},
+  {"t":"第十六章 · 毕业","c":1832,"g":"main","m":[24,2,3,10,1,2,2,3,4,0,2,2]},
+  {"t":"插曲 · 姜和","c":1856,"g":"inter","m":[1,2,0,0,0,5,0,0,0,1,0,0]},
+  {"t":"附录 · 于敬堂手记（节选）","c":1385,"g":"inter","m":[0,3,0,0,1,0,0,0,0,0,0,0]},
+  {"t":"第十七章 · 井","c":2384,"g":"main","m":[6,8,7,0,2,0,0,0,4,0,1,0]},
+  {"t":"第十八章 · 找来","c":2361,"g":"main","m":[9,5,4,0,8,1,0,0,2,1,2,0]},
+  {"t":"丹丹","c":648,"g":"other","m":[2,0,0,0,9,0,3,0,0,0,0,0]},
+  {"t":"徐老师","c":926,"g":"other","m":[6,1,1,1,3,1,1,1,0,3,0,0]},
+  {"t":"张岚","c":960,"g":"other","m":[0,0,0,0,3,0,0,15,0,0,0,0]},
+  {"t":"卢依田","c":1030,"g":"other","m":[0,0,0,0,0,0,0,0,0,0,0,16]},
+  {"t":"姜和","c":651,"g":"other","m":[9,5,0,0,2,0,0,0,0,0,0,0]},
+  {"t":"王策","c":755,"g":"other","m":[1,2,1,1,4,1,0,2,12,0,1,1]},
+  {"t":"再后来……","c":647,"g":"other","m":[0,3,2,2,0,2,2,0,0,0,0,0]},
+  {"t":"附录 · 高三七班名册","c":747,"g":"inter","m":[3,1,2,1,4,2,1,2,1,0,1,1]}
+];
+
+const PEOPLE_ORDER = ["成汐","姜和","于韵","何雨","肖中","赵克","李景","张岚","王策","徐老师","泽研","卢依田"];
+
+/* 正文人物提及次数（前 11,137 行精确匹配） */
+const PEOPLE = [
+  {"n":"成汐","v":509,"s":"alive"},
+  {"n":"姜和","v":124,"s":"date"},
+  {"n":"张岚","v":118,"s":"alive"},
+  {"n":"何雨","v":115,"s":"same"},
+  {"n":"赵克","v":100,"s":"same"},
+  {"n":"王策","v":85,"s":"alive"},
+  {"n":"于韵","v":77,"s":"same"},
+  {"n":"肖中","v":68,"s":"alive"},
+  {"n":"周韩泽研","v":61,"s":"same"},
+  {"n":"徐老师","v":49,"s":"none"},
+  {"n":"李景","v":40,"s":"same"},
+  {"n":"卢依田","v":40,"s":"alive"}
+];
+
+const STATUS = {
+  alive:{c:"#5f7259", label:"名册标记「活着」"},
+  same:{c:"#a8322d", label:"名册标记「同日」"},
+  date:{c:"#a98546", label:"名册记具体日期"},
+  none:{c:"#9c9384", label:"未列入名册"}
+};
+
+const TIMELINE = [
+  {"y":"1985","m":"三月","t":"推土机在老槐树下推不动","d":"县里要在村东盖中学，挖开树根，下面是井。井口压着铜匣，匣上刻字，字不可识。","q":"工头说填了。我说不能填。","k":true},
+  {"y":"1985","m":"四月","t":"族谱里的一件旧事","d":"光绪二十三年，村里一个姓于的孩子掉进这口井，没捞上来。他娘在井边叫了三年，叫到嗓子坏了。","q":"后来他娘也死了。再后来，就没人叫了。","k":false},
+  {"y":"1986","m":"冬至","t":"第一次守夜","d":"丑时，井里有动静。不是水声，像有人在井壁上走。他在树底下坐到天亮。","q":"我坐在树底下，没回头。","k":false},
+  {"y":"1989","m":"","t":"匣子裂了第一道缝","d":"用铜焊补上。补的时候，手抖。","q":"","k":false},
+  {"y":"1997","m":"","t":"学校扩建，新楼盖起来","d":"他去找校长。校长姓崔，年轻，戴眼镜。听完问他：有证据吗。","q":"我说，没有。他说，那我不能停。","k":false},
+  {"y":"2000","m":"","t":"第二道缝，补不上了","d":"改成每年描字，描一次，能压一年。","q":"","k":false},
+  {"y":"2005","m":"","t":"老伴走了","d":"走的那天，他在井边。等他回去，人已经凉了。","q":"我没见上最后一面。","k":true},
+  {"y":"2006","m":"","t":"记不起她的脸","d":"他记得她做饭放多少盐，记得她左手的小指是弯的，不记得她长什么样。","q":"我知道是被吃了。它吃了我一口。","k":true},
+  {"y":"2010","m":"","t":"描不动字了","d":"手抖得厉害，把匣子重新焊了一遍，焊得很丑。","q":"","k":false},
+  {"y":"2014","m":"冬","t":"换了个校长，还是姓崔","d":"那年冬天，学校的成绩忽然好了。他听见井底下的声音——不是它走的声音，是它吃东西的声音。","q":"它在吃。吃得很饱。","k":true},
+  {"y":"2021","m":"十月二十九日","t":"高三七班的那一夜","d":"晚自习，停电，广播开始点名。这一夜之后，名册上的名字开始被划掉。","q":"应到三十人，实到二十九人。缺勤一人。","k":true},
+  {"y":"2024","m":"夏","t":"十一个人聚了一次","d":"群里三十一个人。不，十一个人。来了六个。","q":"","k":false},
+  {"y":"2026","m":"","t":"学校门口的荣誉墙拆了","d":"拆之前王策去拍了照片。墙上挂着三十多块牌子，其中一块写着「一本上线率百分之八十七」。他发了一个帖子。","q":"帖子挂了三天。浏览三百二十七次。回复十一条。","k":true},
+  {"y":"2031","m":"","t":"陈念翻出那个铁盒子","d":"丹丹的女儿二十七岁那年，翻出明信片和一本手抄的名册，指着第一个名字问：他是什么样的人。","q":"他爱笑。他会转笔。他转得很快，但是老掉。","k":false}
+];
+
+const LADDER = [
+  {"n":31,"cap":"开篇","sub":"重点班，三十一个人","soft":false},
+  {"n":30,"cap":"广播点名","sub":"应到三十人","soft":true},
+  {"n":29,"cap":"广播点名","sub":"实到二十九人","soft":true},
+  {"n":28,"cap":"屏幕显示","sub":"「二十八人」","soft":true},
+  {"n":27,"cap":"〈点卯〉连减","sub":"减到二十七","soft":true},
+  {"n":26,"cap":"〈点卯〉连减","sub":"减到二十六","soft":true},
+  {"n":25,"cap":"〈点卯〉连减","sub":"减到二十五","soft":true},
+  {"n":11,"cap":"当夜结束","sub":"教室里剩下十一个人","soft":false}
+];
+
+const ROSTER = [
+  {"n":"成汐","g":"女","a":"十七","m":"alive","d":"班长。每天早上买两瓶牛奶。保温杯杯口朝左。怕别人失望"},
+  {"n":"肖中","g":"男","a":"十七","m":"alive","d":"纪律委员。数学不好。给人换了三年热水。记性最好"},
+  {"n":"陈丹丹","g":"女","a":"十七","m":"alive","d":"我，成汐的朋友。胃不好。爱哭"},
+  {"n":"袁冰","g":"男","a":"十八","m":"alive","d":"嘴欠。他爸是保安"},
+  {"n":"张岚","g":"女","a":"十七","m":"alive","d":"最后一排靠墙。死了两年，没人发现。她妈买过五套校服"},
+  {"n":"王策","g":"男","a":"十七","m":"alive","d":"纪律委员。记了三年别人的错。后来记了一辈子别人的好"},
+  {"n":"卢依田","g":"女","a":"十七","m":"alive","d":"学习委员。她姐不认得她。她每周去一次超市"},
+  {"n":"蒋文","g":"男","a":"十八","m":"alive","d":"体育生。下雨天有人替他收衣服"},
+  {"n":"罗宇","g":"男","a":"十七","m":"alive","d":"物理课代表。会做题，不爱讲"},
+  {"n":"姜和","g":"男","a":"十八","m":"date","d":"最后一排靠门。会转笔，老掉。借过赵克二十块钱。笑起来眼睛会眯成一条缝"},
+  {"n":"于韵","g":"女","a":"十七","m":"same","d":"语文课代表。《故乡》满分。怕黑。她外公守着一口井"},
+  {"n":"周韩泽研","g":"女","a":"十七","m":"same","d":"于韵的同桌。欠她一顿火锅，三盘毛肚"},
+  {"n":"何雨","g":"女","a":"十七","m":"same","d":"英语全班第一。抄过成汐的错题本，少还两页。一直想还"},
+  {"n":"尹天高","g":"男","a":"十八","m":"same","d":"记性好。胳膊上有淤青。他说他运气一向差"},
+  {"n":"赵克","g":"男","a":"十八","m":"same","d":"最后一排靠门。爱笑。他爸给他买韭菜鸡蛋包子"},
+  {"n":"李景","g":"男","a":"十七","m":"same","d":"写字很慢。给妈妈写了二十三封信。他妈叫周秀兰"},
+  {"n":"郑一鸣","g":"男","a":"十七","m":"same","d":"化学课代表。胃不好。偷吃辣条"},
+  {"n":"孙澜","g":"女","a":"十七","m":"same","d":"唱歌好听。她妈在服装厂"},
+  {"n":"傅小满","g":"女","a":"十七","m":"same","d":"奶奶耳朵背。她喊了三遍「奶奶是我」"},
+  {"n":"李思远","g":"男","a":"十七","m":"same","d":"坐在窗边"},
+  {"n":"杨枭","g":"男","a":"十八","m":"same","d":"他妈三年前走了。他爸一个人在家"},
+  {"n":"莫小北","g":"女","a":"十七","m":"same","d":"说话声音很小"},
+  {"n":"白露","g":"女","a":"十七","m":"same","d":"文艺委员。写了一首没写完的歌"},
+  {"n":"许晶晶","g":"女","a":"十七","m":"same","d":"生活委员。爱笑。笑了三年，装了三年的开心"},
+  {"n":"崔明","g":"男","a":"十七","m":"same","d":"老实。他说他相信老师"},
+  {"n":"孙越","g":"男","a":"十七","m":"same","d":"名册未记备注"},
+  {"n":"周彤","g":"女","a":"十七","m":"same","d":"名册未记备注"},
+  {"n":"陈嘉","g":"女","a":"十七","m":"same","d":"名册未记备注"},
+  {"n":"林小雨","g":"女","a":"十七","m":"same","d":"名册未记备注"},
+  {"n":"邓超","g":"男","a":"十八","m":"same","d":"名册未记备注"},
+  {"n":"吴迪","g":"男","a":"十七","m":"same","d":"名册未记备注"}
+];
+
+const TAG_TEXT = {alive:"活着", same:"同日", date:"记日期"};
+const GROUP_COLOR = {main:"#2f2b26", inter:"#a8322d", other:"#b3a894"};
+
+/* =========================================================
+   工具
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString("en-US");
+const tip = $("#tip");
+
+function showTip(html, x, y){
+  tip.innerHTML = html;
+  tip.classList.add("on");
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = Math.min(Math.max(x, w/2 + 8), window.innerWidth - w/2 - 8);
+  let top = y - 10;
+  if (top - h < 8) top = y + h + 26;
+  tip.style.left = left + "px";
+  tip.style.top = top + "px";
+}
+function hideTip(){ tip.classList.remove("on"); }
+
+function bindTip(el, html){
+  el.addEventListener("mouseenter", e => showTip(html, e.clientX, e.clientY));
+  el.addEventListener("mousemove", e => showTip(html, e.clientX, e.clientY));
+  el.addEventListener("mouseleave", hideTip);
+  el.addEventListener("touchstart", e => {
+    const t = e.touches[0];
+    showTip(html, t.clientX, t.clientY);
+    setTimeout(hideTip, 2200);
+  }, {passive:true});
+}
+
+/* 取整到"好看"的坐标轴上限 */
+function niceMax(v){
+  const exp = Math.pow(10, Math.floor(Math.log10(v)));
+  const f = v / exp;
+  const steps = [1,1.2,1.5,2,2.5,3,4,5,6,8,10];
+  for (const s of steps) if (s >= f) return s * exp;
+  return 10 * exp;
+}
+
+/* 在条形图下方追加刻度轴 */
+function makeAxis(host, max, unit, div){
+  div = div || 4;
+  const el = document.createElement("div");
+  el.className = "axis";
+  let ticks = "";
+  for (let i = 0; i <= div; i++){
+    ticks += "<span>" + fmt(Math.round(max * i / div)) + "</span>";
+  }
+  el.innerHTML = '<div class="ticks">' + ticks + '</div><div class="unit">' + unit + '</div>';
+  host.appendChild(el);
+}
+
+/* =========================================================
+   01 章节体量
+   ========================================================= */
+(function renderChapters(){
+  const host = $("#chapterBars");
+  const rawMax = Math.max(...SECTIONS.map(s => s.c));
+  const max = niceMax(rawMax);
+  const total = SECTIONS.reduce((a,b) => a + b.c, 0);
+  let cum = 0;
+
+  SECTIONS.forEach((s, i) => {
+    cum += s.c;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.tabIndex = 0;
+    row.innerHTML =
+      '<div class="row-label"><em>' + String(i+1).padStart(2,"0") + '</em>' + s.t + '</div>' +
+      '<div class="track"><div class="bar" style="background:' + GROUP_COLOR[s.g] + '"></div></div>' +
+      '<div class="row-val">' + fmt(s.c) + '</div>';
+    host.appendChild(row);
+
+    const pct = (s.c / total * 100).toFixed(1);
+    const html = '<b>' + s.t + '</b><br>' +
+                 '<span class="k">汉字</span> ' + fmt(s.c) + ' 字<br>' +
+                 '<span class="k">占全篇</span> ' + pct + '%<br>' +
+                 '<span class="k">累计至本节</span> ' + fmt(cum) + ' 字';
+    bindTip(row, html);
+
+    requestAnimationFrame(() => setTimeout(() => {
+      row.querySelector(".bar").style.width = (s.c / max * 100) + "%";
+    }, 40 + i * 18));
+  });
+  makeAxis(host, max, "字");
+})();
+
+/* =========================================================
+   02 人物出场
+   ========================================================= */
+(function renderPeople(){
+  const host = $("#peopleBars");
+  const max = niceMax(Math.max(...PEOPLE.map(p => p.v)));
+  PEOPLE.forEach((p, i) => {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.tabIndex = 0;
+    row.innerHTML =
+      '<div class="row-label">' + p.n + '</div>' +
+      '<div class="track"><div class="bar" style="background:' + STATUS[p.s].c + '"></div></div>' +
+      '<div class="row-val">' + fmt(p.v) + '</div>';
+    host.appendChild(row);
+
+    bindTip(row, '<b>' + p.n + '</b><br>' +
+      '<span class="k">正文提及</span> ' + fmt(p.v) + ' 次<br>' +
+      '<span class="k">名册标记</span> ' + STATUS[p.s].label);
+
+    requestAnimationFrame(() => setTimeout(() => {
+      row.querySelector(".bar").style.width = (p.v / max * 100) + "%";
+    }, 60 + i * 60));
+  });
+  makeAxis(host, max, "次");
+})();
+
+/* =========================================================
+   03 热力图
+   ========================================================= */
+(function renderHeat(){
+  const grid = $("#heatGrid");
+  const maxV = 61;
+  const shade = v => {
+    if (!v) return "#f7f2e8";
+    const t = Math.pow(v / maxV, 0.48);
+    const from = [247,242,232], to = [138,36,32];
+    const c = from.map((f,i) => Math.round(f + (to[i]-f) * t));
+    return "rgb(" + c.join(",") + ")";
+  };
+
+  // 表头：章节序号
+  SECTIONS.forEach((s, i) => {
+    const d = document.createElement("div");
+    d.className = "heat-col";
+    d.textContent = String(i+1).padStart(2,"0");
+    grid.appendChild(d);
+  });
+
+  const labels = $("#heatLabels");
+  PEOPLE_ORDER.forEach((name, r) => {
+    const label = document.createElement("div");
+    label.className = "heat-name";
+    label.textContent = name;
+    labels.appendChild(label);
+
+    SECTIONS.forEach((s, c) => {
+      const v = s.m[r];
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.style.background = shade(v);
+      cell.tabIndex = -1;
+      bindTip(cell, '<b>' + s.t + '</b><br>' +
+        '<span class="k">' + name + '</span> ' + v + ' 次');
+      grid.appendChild(cell);
+    });
+  });
+
+  // 色阶
+  const scale = $("#heatScale");
+  for (let i = 0; i <= 10; i++){
+    const b = document.createElement("i");
+    b.style.background = shade(maxV * i / 10);
+    scale.appendChild(b);
+  }
+})();
+
+/* =========================================================
+   04 时间线
+   ========================================================= */
+(function renderTimeline(){
+  const host = $("#timelineList");
+  TIMELINE.forEach(t => {
+    const item = document.createElement("div");
+    item.className = "tl-item" + (t.k ? " key" : " quiet");
+    item.innerHTML =
+      '<div class="tl-year">' + t.y + (t.m ? '<small>' + t.m + '</small>' : '') + '</div>' +
+      '<div class="tl-body"><h4>' + t.t + '</h4><p>' + t.d + '</p>' +
+      (t.q ? '<span class="q">' + t.q + '</span>' : '') + '</div>';
+    host.appendChild(item);
+  });
+})();
+
+/* =========================================================
+   05 点名阶梯
+   ========================================================= */
+(function renderLadder(){
+  const host = $("#ladder");
+  const maxH = 190;
+  LADDER.forEach((d) => {
+    const el = document.createElement("div");
+    el.className = "step" + (d.soft ? " soft" : "");
+    el.innerHTML =
+      '<div class="num">' + d.n + '</div>' +
+      '<div class="col" style="height:' + (d.n / 31 * maxH) + 'px"></div>' +
+      '<div class="cap"><b>' + d.cap + '</b>' + d.sub + '</div>';
+    host.appendChild(el);
+  });
+
+  const list = $("#ladderList");
+  LADDER.forEach((d, i) => {
+    const row = document.createElement("div");
+    row.className = "lrow" + (d.soft ? " soft" : "");
+    row.innerHTML =
+      '<div class="lhead"><b>' + d.n + '</b><span>' + d.cap + '</span><em>' + d.sub + '</em></div>' +
+      '<div class="ltrack"><i></i></div>';
+    list.appendChild(row);
+    requestAnimationFrame(() => setTimeout(() => {
+      row.querySelector("i").style.width = (d.n / 31 * 100) + "%";
+    }, 80 + i * 70));
+  });
+})();
+
+/* =========================================================
+   06 名册
+   ========================================================= */
+(function renderRoster(){
+  const body = $("#rosterBody");
+  const chips = document.querySelectorAll(".chip");
+  const search = $("#search");
+  let filter = "all";
+
+  function draw(){
+    const kw = search.value.trim();
+    const list = ROSTER.filter(r =>
+      (filter === "all" || r.m === filter) &&
+      (!kw || r.n.includes(kw) || r.d.includes(kw) || r.g.includes(kw))
+    );
+
+    if (!list.length){
+      body.innerHTML = '<div class="empty">没有匹配的记录</div>';
+      return;
+    }
+    body.innerHTML = list.map(r => {
+      const idx = ROSTER.indexOf(r) + 1;
+      return '<div class="r-row">' +
+        '<span class="r-idx">' + String(idx).padStart(2,"0") + '</span>' +
+        '<span class="r-name">' + r.n + '</span>' +
+        '<span class="r-dim">' + r.g + '</span>' +
+        '<span class="r-dim">' + r.a + '</span>' +
+        '<span><span class="tag ' + r.m + '">' + TAG_TEXT[r.m] + '</span></span>' +
+        '<span class="r-note">' + r.d + '</span>' +
+      '</div>';
+    }).join("");
+  }
+
+  chips.forEach(c => {
+    c.addEventListener("click", () => {
+      chips.forEach(x => x.classList.remove("on"));
+      c.classList.add("on");
+      filter = c.dataset.f;
+      draw();
+    });
+  });
+  search.addEventListener("input", draw);
+  draw();
+})();
+
+/* =========================================================
+   KPI 数字滚动
+   ========================================================= */
+(function animateKPI(){
+  document.querySelectorAll(".kpi .v[data-count]").forEach(el => {
+    const target = +el.dataset.count;
+    const dur = 1100;
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min((now - start) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(target * e));
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+})();
+
+/* 平滑锚点 */
+document.querySelectorAll('.toc a').forEach(a => {
+  a.addEventListener("click", e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute("href"));
+    if (t) window.scrollTo({top: t.offsetTop - 70, behavior:"smooth"});
+  });
+});
+</script>
+</body>
+</html>
