@@ -164,7 +164,7 @@ export const footerData = {
   ],
   socialLinks: [
     { ariaLabel: 'RSS', icon: 'tabler:rss', href: getAsset('/rss.xml') },
-    { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/arthelokyo/astrowind' },
+    { ariaLabel: 'Github', icon: 'tabler:brand-github', href: 'https://github.com/mobellling/mobellling.github.io' },
   ],
   footNote: `
     Made by <a class="text-blue-600 underline dark:text-muted" > Mobell</a> · All rights reserved.
